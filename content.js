@@ -25,12 +25,18 @@
   // Icons — Using the Appliqueer brand logo
   // ─────────────────────────────────────────────────────────────
   const icons = {
-    logo: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-      <path d="M30 100 L30 70 Q30 50 50 50 L70 50 Q90 50 90 70 L90 100"
-            fill="none" stroke="#5BA4D9" stroke-width="8" stroke-linecap="round"/>
-      <path d="M50 50 L60 20 L70 50"
-            fill="none" stroke="#6B8EC2" stroke-width="8" stroke-linecap="round"/>
-      <circle cx="60" cy="68" r="6" fill="#1E3A5F"/>
+    logo: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <!-- Right arc - Light Blue -->
+      <path d="M100,40 Q150,60 150,120 Q150,160 120,180"
+            fill="#5BA4D9" opacity="0.9"/>
+      <!-- Left arc - Medium Blue -->
+      <path d="M100,40 Q50,60 50,120 Q50,160 80,180"
+            fill="#6B8EC2" opacity="0.85"/>
+      <!-- Center triangle - Navy -->
+      <path d="M70,100 L100,50 L130,100 Z"
+            fill="#1E3A5F"/>
+      <!-- Center dot -->
+      <circle cx="100" cy="140" r="12" fill="#1E3A5F"/>
     </svg>`,
 
     close: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
@@ -79,11 +85,8 @@
       <div class="aq-panel" id="aq-panel">
         <header class="aq-header">
           <div class="aq-logo">
-            <div class="aq-logo-icon">${icons.logo}</div>
-            <div class="aq-logo-text-wrapper">
-              <span class="aq-logo-text">Appliqueer</span>
-              <p class="aq-logo-subtitle">AI Resume Assistant</p>
-            </div>
+            <span class="aq-logo-text">Appliqueer</span>
+            <p class="aq-logo-subtitle">AI Resume Assistant</p>
           </div>
           <button class="aq-close-btn" id="aq-close-btn" aria-label="Close">
             ${icons.close}

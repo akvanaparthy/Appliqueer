@@ -7,13 +7,14 @@ const STORAGE_KEYS = {
   API_PROVIDER: 'appliqueer_api_provider',
   RESUME: 'appliqueer_resume',
   ADDITIONAL_FILES: 'appliqueer_additional_files',
-  SETTINGS: 'appliqueer_settings'
+  SETTINGS: 'appliqueer_settings',
+  CACHED_MODELS: 'appliqueer_cached_models'
 };
 
 // Default settings
 const DEFAULT_SETTINGS = {
   provider: 'openai',
-  model: 'gpt-4o-mini',
+  model: '',  // Will be set dynamically
   maxTokens: 1024,
   temperature: 0.7
 };
@@ -21,9 +22,14 @@ const DEFAULT_SETTINGS = {
 // API Endpoints
 const API_ENDPOINTS = {
   openai: 'https://api.openai.com/v1/chat/completions',
+  openaiModels: 'https://api.openai.com/v1/models',
   anthropic: 'https://api.anthropic.com/v1/messages',
+  anthropicModels: 'https://api.anthropic.com/v1/models',
   gemini: 'https://generativelanguage.googleapis.com/v1beta/models'
 };
+
+// Cache duration (10 minutes)
+const MODEL_CACHE_DURATION = 10 * 60 * 1000;
 
 // Listen for messages from content script
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -54,6 +60,9 @@ async function handleMessage(request, sender) {
     
     case 'GET_SETTINGS':
       return await getSettings();
+    
+    case 'FETCH_MODELS':
+      return await fetchModels(request.apiKey, request.provider);
     
     default:
       return { error: 'Unknown message type' };
@@ -305,6 +314,187 @@ async function getSettings() {
   } catch (error) {
     console.error('Appliqueer: Get settings failed', error);
     return { error: error.message };
+  }
+}
+
+// Fetch available models from API
+async function fetchModels(apiKey, provider) {
+  try {
+    if (!apiKey) {
+      return { error: 'API key is required to fetch models' };
+    }
+
+    // Check cache first
+    const cacheKey = `${STORAGE_KEYS.CACHED_MODELS}_${provider}`;
+    const cached = await chrome.storage.local.get([cacheKey]);
+    const cachedData = cached[cacheKey];
+    
+    if (cachedData && (Date.now() - cachedData.timestamp) < MODEL_CACHE_DURATION) {
+      console.log('Appliqueer: Using cached models for', provider);
+      return { models: cachedData.models };
+    }
+
+    // Fetch from API
+    let models = [];
+    
+    switch (provider) {
+      case 'openai':
+        models = await fetchOpenAIModels(apiKey);
+        break;
+      case 'anthropic':
+        models = await fetchAnthropicModels(apiKey);
+        break;
+      case 'gemini':
+        models = await fetchGeminiModels(apiKey);
+        break;
+      default:
+        return { error: `Unknown provider: ${provider}` };
+    }
+
+    // Cache the results
+    if (models.length > 0) {
+      await chrome.storage.local.set({
+        [cacheKey]: {
+          models: models,
+          timestamp: Date.now()
+        }
+      });
+    }
+
+    return { models };
+
+  } catch (error) {
+    console.error('Appliqueer: Fetch models failed', error);
+    // Return fallback models on error
+    return { models: getFallbackModels(provider), error: error.message };
+  }
+}
+
+// Fetch OpenAI models
+async function fetchOpenAIModels(apiKey) {
+  try {
+    const response = await fetch(API_ENDPOINTS.openaiModels, {
+      headers: {
+        'Authorization': `Bearer ${apiKey}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`OpenAI API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    
+    // Filter for main GPT models
+    const allowedModels = [
+      'gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo', 'gpt-4', 
+      'gpt-3.5-turbo', 'gpt-4o-2024-08-06', 'gpt-4o-mini-2024-07-18'
+    ];
+    
+    return data.data
+      .filter(m => allowedModels.some(allowed => m.id.startsWith(allowed) || m.id === allowed))
+      .map(m => ({
+        id: m.id,
+        displayName: formatModelName(m.id)
+      }))
+      .sort((a, b) => a.displayName.localeCompare(b.displayName));
+
+  } catch (error) {
+    console.error('Appliqueer: OpenAI fetch failed', error);
+    return getFallbackModels('openai');
+  }
+}
+
+// Fetch Anthropic models
+async function fetchAnthropicModels(apiKey) {
+  try {
+    const response = await fetch(API_ENDPOINTS.anthropicModels, {
+      headers: {
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01'
+      }
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return data.data.map(model => ({
+        id: model.id,
+        displayName: model.display_name || formatModelName(model.id)
+      }));
+    }
+  } catch (error) {
+    console.error('Appliqueer: Anthropic fetch failed', error);
+  }
+  
+  // Fallback
+  return getFallbackModels('anthropic');
+}
+
+// Fetch Gemini models
+async function fetchGeminiModels(apiKey) {
+  try {
+    const response = await fetch(`${API_ENDPOINTS.gemini}?key=${apiKey}`);
+
+    if (!response.ok) {
+      throw new Error(`Gemini API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    
+    if (data.models) {
+      // Filter for chat-capable models
+      return data.models
+        .filter(m => m.supportedGenerationMethods?.includes('generateContent'))
+        .map(m => ({
+          id: m.name.replace('models/', ''),
+          displayName: m.displayName || formatModelName(m.name.replace('models/', ''))
+        }))
+        .sort((a, b) => a.displayName.localeCompare(b.displayName));
+    }
+  } catch (error) {
+    console.error('Appliqueer: Gemini fetch failed', error);
+  }
+  
+  return getFallbackModels('gemini');
+}
+
+// Format model name to display name
+function formatModelName(id) {
+  return id
+    .replace(/-/g, ' ')
+    .replace(/(\d{4})(\d{2})(\d{2})/g, '') // Remove date suffixes
+    .replace(/\s+/g, ' ')
+    .trim()
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
+// Fallback models when API fails
+function getFallbackModels(provider) {
+  switch (provider) {
+    case 'openai':
+      return [
+        { id: 'gpt-4o', displayName: 'GPT-4o' },
+        { id: 'gpt-4o-mini', displayName: 'GPT-4o Mini' },
+        { id: 'gpt-4-turbo', displayName: 'GPT-4 Turbo' },
+        { id: 'gpt-3.5-turbo', displayName: 'GPT-3.5 Turbo' }
+      ];
+    case 'anthropic':
+      return [
+        { id: 'claude-3-5-sonnet-20241022', displayName: 'Claude 3.5 Sonnet' },
+        { id: 'claude-3-5-haiku-20241022', displayName: 'Claude 3.5 Haiku' },
+        { id: 'claude-3-haiku-20240307', displayName: 'Claude 3 Haiku' },
+        { id: 'claude-3-opus-20240229', displayName: 'Claude 3 Opus' }
+      ];
+    case 'gemini':
+      return [
+        { id: 'gemini-1.5-flash', displayName: 'Gemini 1.5 Flash' },
+        { id: 'gemini-1.5-pro', displayName: 'Gemini 1.5 Pro' },
+        { id: 'gemini-pro', displayName: 'Gemini Pro' }
+      ];
+    default:
+      return [];
   }
 }
 

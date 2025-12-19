@@ -1,25 +1,5 @@
 // Appliqueer Options Page Script
 
-// Model options for each provider
-const MODELS = {
-  openai: [
-    { value: 'gpt-4o', label: 'GPT-4o (Latest)' },
-    { value: 'gpt-4o-mini', label: 'GPT-4o Mini (Fast & Cheap)' },
-    { value: 'gpt-4-turbo', label: 'GPT-4 Turbo' },
-    { value: 'gpt-3.5-turbo', label: 'GPT-3.5 Turbo (Budget)' }
-  ],
-  anthropic: [
-    { value: 'claude-3-5-sonnet-20241022', label: 'Claude 3.5 Sonnet (Latest)' },
-    { value: 'claude-3-haiku-20240307', label: 'Claude 3 Haiku (Fast)' },
-    { value: 'claude-3-opus-20240229', label: 'Claude 3 Opus (Most Capable)' }
-  ],
-  gemini: [
-    { value: 'gemini-1.5-flash', label: 'Gemini 1.5 Flash (Fast)' },
-    { value: 'gemini-1.5-pro', label: 'Gemini 1.5 Pro (Advanced)' },
-    { value: 'gemini-pro', label: 'Gemini Pro' }
-  ]
-};
-
 // API key help text
 const API_HELP = {
   openai: 'Get your API key from <a href="https://platform.openai.com/api-keys" target="_blank">OpenAI Dashboard</a>',
@@ -34,13 +14,15 @@ let settings = {
   resume: '',
   additionalFiles: [],
   general: {
-    model: 'gpt-4o-mini',
+    model: '',
     maxTokens: 1024,
     temperature: 0.7
   }
 };
 
 let hasUnsavedChanges = false;
+let isLoadingModels = false;
+let loadedModels = [];
 
 // DOM Elements
 const elements = {};
@@ -92,18 +74,28 @@ async function loadSettings() {
 
 // Bind event listeners
 function bindEvents() {
-  // Provider change
+  // Provider change - refetch models for new provider
   elements.provider.addEventListener('change', (e) => {
     settings.provider = e.target.value;
-    updateModels();
+    settings.general.model = ''; // Reset model selection
+    fetchModelsFromAPI();
     updateApiKeyHelp();
     markChanged();
   });
 
-  // API Key
+  // API Key - debounced fetch models on change
+  let apiKeyTimeout;
   elements.apiKey.addEventListener('input', (e) => {
     settings.apiKey = e.target.value;
     markChanged();
+    
+    // Debounce API key input to avoid excessive API calls
+    clearTimeout(apiKeyTimeout);
+    apiKeyTimeout = setTimeout(() => {
+      if (settings.apiKey.length > 10) {
+        fetchModelsFromAPI();
+      }
+    }, 1000);
   });
 
   elements.toggleApiKey.addEventListener('click', () => {
@@ -211,28 +203,58 @@ function updateUI() {
   elements.temperature.value = settings.general.temperature;
   elements.temperatureValue.textContent = settings.general.temperature.toFixed(1);
 
-  updateModels();
+  fetchModelsFromAPI();
   updateApiKeyHelp();
   updateCharCount();
   renderFileList();
 }
 
-// Update model options based on provider
-function updateModels() {
-  const models = MODELS[settings.provider] || [];
-  elements.modelSelect.innerHTML = models
-    .map(m => `<option value="${m.value}">${m.label}</option>`)
+// Fetch models dynamically from API
+async function fetchModelsFromAPI() {
+  if (isLoadingModels) return;
+  
+  // Show loading state
+  isLoadingModels = true;
+  elements.modelSelect.innerHTML = '<option value="">Loading models...</option>';
+  elements.modelSelect.disabled = true;
+
+  try {
+    const response = await chrome.runtime.sendMessage({
+      type: 'FETCH_MODELS',
+      apiKey: settings.apiKey,
+      provider: settings.provider
+    });
+
+    if (response.models && response.models.length > 0) {
+      loadedModels = response.models;
+      renderModelOptions();
+    } else {
+      elements.modelSelect.innerHTML = '<option value="">No models available - check API key</option>';
+    }
+  } catch (error) {
+    console.error('Failed to fetch models:', error);
+    elements.modelSelect.innerHTML = '<option value="">Failed to load models</option>';
+  } finally {
+    isLoadingModels = false;
+    elements.modelSelect.disabled = false;
+  }
+}
+
+// Render model options in select
+function renderModelOptions() {
+  elements.modelSelect.innerHTML = loadedModels
+    .map(m => `<option value="${m.id}">${m.displayName}</option>`)
     .join('');
   
   // Set current model or default to first option
   const currentModel = settings.general.model;
-  const modelExists = models.some(m => m.value === currentModel);
+  const modelExists = loadedModels.some(m => m.id === currentModel);
   
   if (modelExists) {
     elements.modelSelect.value = currentModel;
-  } else if (models.length > 0) {
-    elements.modelSelect.value = models[0].value;
-    settings.general.model = models[0].value;
+  } else if (loadedModels.length > 0) {
+    elements.modelSelect.value = loadedModels[0].id;
+    settings.general.model = loadedModels[0].id;
   }
 }
 

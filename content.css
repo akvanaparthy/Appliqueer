@@ -166,44 +166,24 @@
    Header
    ───────────────────────────────────────────────────────────────── */
 .aq-header {
-  padding: 24px 20px 20px !important;
+  padding: 24px 24px 20px !important;
   background: var(--aq-surface) !important;
   border-bottom: 1px solid var(--aq-border) !important;
   display: flex !important;
-  align-items: center !important;
+  align-items: flex-start !important;
   justify-content: space-between !important;
   gap: 16px !important;
 }
 
 .aq-logo {
   display: flex !important;
-  align-items: center !important;
-  gap: 12px !important;
-}
-
-.aq-logo-icon {
-  width: 32px !important;
-  height: 32px !important;
-  flex-shrink: 0 !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
-
-.aq-logo-icon svg {
-  width: 100% !important;
-  height: 100% !important;
-}
-
-.aq-logo-text-wrapper {
-  display: flex !important;
   flex-direction: column !important;
-  gap: 2px !important;
+  gap: 4px !important;
 }
 
 .aq-logo-text {
   font-family: var(--aq-font-display) !important;
-  font-size: 18px !important;
+  font-size: 19px !important;
   font-weight: 700 !important;
   color: var(--aq-text-primary) !important;
   letter-spacing: -0.4px !important;
@@ -211,7 +191,7 @@
 }
 
 .aq-logo-subtitle {
-  font-size: 12px !important;
+  font-size: 13px !important;
   font-weight: 500 !important;
   color: var(--aq-text-secondary) !important;
   line-height: 1.3 !important;
@@ -248,8 +228,8 @@
   flex: 1 !important;
   display: flex !important;
   flex-direction: column !important;
-  padding: 20px !important;
-  gap: 18px !important;
+  padding: 24px !important;
+  gap: 20px !important;
   overflow-y: auto !important;
   overflow-x: hidden !important;
 }
@@ -306,24 +286,23 @@
 .aq-input-group {
   display: flex !important;
   flex-direction: column !important;
-  gap: var(--aq-space-xs) !important;
+  gap: 10px !important;
 }
 
 .aq-input-label {
-  font-size: 12px !important;
+  font-size: 13px !important;
   font-weight: 600 !important;
-  color: var(--aq-text-secondary) !important;
-  padding: 0 4px !important;
-  margin-bottom: 2px !important;
+  color: var(--aq-text-primary) !important;
+  padding: 0 2px !important;
 }
 
 .aq-textarea {
   width: 100% !important;
-  min-height: 100px !important;
+  min-height: 110px !important;
   background: var(--aq-surface) !important;
   border: 1px solid var(--aq-border) !important;
   border-radius: var(--aq-radius-md) !important;
-  padding: var(--aq-space-md) !important;
+  padding: 16px !important;
   color: var(--aq-text-primary) !important;
   font-family: var(--aq-font-body) !important;
   font-size: 14px !important;
@@ -348,7 +327,7 @@
 }
 
 .aq-textarea--small {
-  min-height: 76px !important;
+  min-height: 90px !important;
 }
 
 /* ─────────────────────────────────────────────────────────────────
@@ -356,21 +335,22 @@
    ───────────────────────────────────────────────────────────────── */
 .aq-submit-btn {
   width: 100% !important;
-  height: 48px !important;
+  height: 52px !important;
   background: var(--aq-blue) !important;
   border: none !important;
   border-radius: var(--aq-radius-md) !important;
   color: #FFFFFF !important;
   font-family: var(--aq-font-display) !important;
-  font-size: 14px !important;
+  font-size: 15px !important;
   font-weight: 600 !important;
   cursor: pointer !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: var(--aq-space-sm) !important;
+  gap: 10px !important;
   transition: all 0.2s var(--aq-ease) !important;
   box-shadow: 0 2px 8px rgba(91, 164, 217, 0.2) !important;
+  margin-top: 4px !important;
 }
 
 .aq-submit-btn:hover {
@@ -402,21 +382,22 @@
   flex: 1 !important;
   display: flex !important;
   flex-direction: column !important;
-  gap: var(--aq-space-sm) !important;
-  min-height: 160px !important;
+  gap: 12px !important;
+  min-height: 180px !important;
+  margin-top: 4px !important;
 }
 
 .aq-response-header {
   display: flex !important;
   justify-content: space-between !important;
   align-items: center !important;
-  padding: 0 var(--aq-space-sm) !important;
+  padding: 0 2px !important;
 }
 
 .aq-label {
-  font-size: 12px !important;
+  font-size: 13px !important;
   font-weight: 600 !important;
-  color: var(--aq-text-secondary) !important;
+  color: var(--aq-text-primary) !important;
 }
 
 .aq-copy-btn {
@@ -451,7 +432,7 @@
   background: var(--aq-surface) !important;
   border: 1px solid var(--aq-border) !important;
   border-radius: var(--aq-radius-md) !important;
-  padding: var(--aq-space-lg) !important;
+  padding: 20px !important;
   overflow-y: auto !important;
   box-shadow: var(--aq-shadow-sm) !important;
 }
@@ -556,7 +537,7 @@
    Footer
    ───────────────────────────────────────────────────────────────── */
 .aq-footer {
-  padding: 16px 20px !important;
+  padding: 18px 24px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
