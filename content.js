@@ -25,19 +25,7 @@
   // Icons — Using the Appliqueer brand logo
   // ─────────────────────────────────────────────────────────────
   const icons = {
-    logo: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-      <!-- Right arc - Light Blue -->
-      <path d="M100,40 Q150,60 150,120 Q150,160 120,180"
-            fill="#5BA4D9" opacity="0.9"/>
-      <!-- Left arc - Medium Blue -->
-      <path d="M100,40 Q50,60 50,120 Q50,160 80,180"
-            fill="#6B8EC2" opacity="0.85"/>
-      <!-- Center triangle - Navy -->
-      <path d="M70,100 L100,50 L130,100 Z"
-            fill="#1E3A5F"/>
-      <!-- Center dot -->
-      <circle cx="100" cy="140" r="12" fill="#1E3A5F"/>
-    </svg>`,
+    logo: `<img src="${chrome.runtime.getURL('icons/Appliqueer PNG.png')}" alt="Appliqueer" style="width: 100%; height: 100%; object-fit: contain;">`,
 
     close: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
       <line x1="18" y1="6" x2="6" y2="18"/>

@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadSettings();
   bindEvents();
   updateUI();
+  updateFetchButtonState();
 });
 
 // Cache DOM elements
@@ -58,6 +59,7 @@ function cacheElements() {
   elements.resetBtn = document.getElementById('reset-btn');
   elements.exportBtn = document.getElementById('export-btn');
   elements.saveIndicator = document.getElementById('save-indicator');
+  elements.fetchModelsBtn = document.getElementById('fetch-models-btn');
 }
 
 // Load settings from storage
@@ -78,29 +80,26 @@ function bindEvents() {
   elements.provider.addEventListener('change', (e) => {
     settings.provider = e.target.value;
     settings.general.model = ''; // Reset model selection
-    fetchModelsFromAPI();
     updateApiKeyHelp();
+    updateFetchButtonState();
     markChanged();
   });
 
-  // API Key - debounced fetch models on change
-  let apiKeyTimeout;
+  // API Key - update button state on change
   elements.apiKey.addEventListener('input', (e) => {
     settings.apiKey = e.target.value;
+    updateFetchButtonState();
     markChanged();
-    
-    // Debounce API key input to avoid excessive API calls
-    clearTimeout(apiKeyTimeout);
-    apiKeyTimeout = setTimeout(() => {
-      if (settings.apiKey.length > 10) {
-        fetchModelsFromAPI();
-      }
-    }, 1000);
   });
 
   elements.toggleApiKey.addEventListener('click', () => {
     const isPassword = elements.apiKey.type === 'password';
     elements.apiKey.type = isPassword ? 'text' : 'password';
+  });
+
+  // Fetch models button
+  elements.fetchModelsBtn.addEventListener('click', async () => {
+    await saveApiKeyAndFetchModels();
   });
 
   // Model selection
@@ -203,10 +202,84 @@ function updateUI() {
   elements.temperature.value = settings.general.temperature;
   elements.temperatureValue.textContent = settings.general.temperature.toFixed(1);
 
-  fetchModelsFromAPI();
+  // Only fetch models if API key exists
+  if (settings.apiKey && settings.apiKey.length > 10) {
+    fetchModelsFromAPI();
+  } else {
+    elements.modelSelect.innerHTML = '<option value="">Add API key to load models</option>';
+    elements.modelSelect.disabled = true;
+  }
+
   updateApiKeyHelp();
   updateCharCount();
   renderFileList();
+}
+
+// Update fetch models button state
+function updateFetchButtonState() {
+  const hasValidKey = settings.apiKey && settings.apiKey.length > 10;
+  elements.fetchModelsBtn.disabled = !hasValidKey;
+
+  if (!hasValidKey) {
+    elements.fetchModelsBtn.style.opacity = '0.5';
+    elements.fetchModelsBtn.style.cursor = 'not-allowed';
+  } else {
+    elements.fetchModelsBtn.style.opacity = '1';
+    elements.fetchModelsBtn.style.cursor = 'pointer';
+  }
+}
+
+// Save API key and fetch models
+async function saveApiKeyAndFetchModels() {
+  if (!settings.apiKey || settings.apiKey.length < 10) {
+    alert('Please enter a valid API key');
+    return;
+  }
+
+  try {
+    // Disable button and show loading
+    elements.fetchModelsBtn.disabled = true;
+    const originalText = elements.fetchModelsBtn.innerHTML;
+    elements.fetchModelsBtn.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width: 16px; height: 16px; animation: spin 1s linear infinite;">
+        <polyline points="23 4 23 10 17 10"/>
+        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+      </svg>
+      Saving & Fetching Models...
+    `;
+
+    // Save API key and provider first
+    const response = await chrome.runtime.sendMessage({
+      type: 'SAVE_SETTINGS',
+      settings: {
+        apiKey: settings.apiKey,
+        provider: settings.provider
+      }
+    });
+
+    if (response.error) {
+      throw new Error(response.error);
+    }
+
+    // Now fetch models
+    await fetchModelsFromAPI();
+
+    // Show success indicator
+    showSaveIndicator();
+
+  } catch (error) {
+    alert('Failed to save API key or fetch models: ' + error.message);
+  } finally {
+    // Restore button
+    elements.fetchModelsBtn.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width: 16px; height: 16px;">
+        <polyline points="23 4 23 10 17 10"/>
+        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+      </svg>
+      Save API Key & Fetch Models
+    `;
+    updateFetchButtonState();
+  }
 }
 
 // Fetch models dynamically from API
