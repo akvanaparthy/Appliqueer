@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════
-   APPLIQUEER SIDEPANEL — "Neon Noir" Design System
-   A luxury dark interface with electric lime accents
+   APPLIQUEER SIDEPANEL — "Ocean Blue" Design System
+   A luxury dark interface with ocean blue accents
    ═══════════════════════════════════════════════════════════════ */
 
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
@@ -12,17 +12,18 @@
   /* Typography */
   --aq-font: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif !important;
 
-  /* Core Palette - Neon Noir */
+  /* Core Palette - Ocean Blue */
   --aq-void: #08080a !important;
   --aq-surface: #0e0e11 !important;
   --aq-elevated: #151518 !important;
   --aq-subtle: #1c1c20 !important;
 
-  /* The Signature Lime */
-  --aq-lime: #e6ff00 !important;
-  --aq-lime-dim: rgba(230, 255, 0, 0.08) !important;
-  --aq-lime-glow: rgba(230, 255, 0, 0.15) !important;
-  --aq-lime-bright: rgba(230, 255, 0, 0.25) !important;
+  /* The Signature Blue */
+  --aq-blue: #5BA4D9 !important;
+  --aq-blue-dim: rgba(91, 164, 217, 0.08) !important;
+  --aq-blue-glow: rgba(91, 164, 217, 0.15) !important;
+  --aq-blue-bright: rgba(91, 164, 217, 0.25) !important;
+  --aq-navy: #1E3A5F !important;
 
   /* Text Hierarchy */
   --aq-text-primary: #fafafa !important;
@@ -113,11 +114,11 @@
 
 .aq-floating-btn:hover {
   transform: translateY(-2px) scale(1.02) !important;
-  border-color: var(--aq-lime) !important;
+  border-color: var(--aq-blue) !important;
   box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.6),
-    0 0 40px var(--aq-lime-glow),
-    0 0 0 1px var(--aq-lime-dim) inset !important;
+    0 0 40px var(--aq-blue-glow),
+    0 0 0 1px var(--aq-blue-dim) inset !important;
 }
 
 .aq-floating-btn:active {
@@ -183,7 +184,7 @@
   left: 0 !important;
   right: 0 !important;
   height: 180px !important;
-  background: radial-gradient(ellipse 80% 50% at 50% 0%, var(--aq-lime-dim) 0%, transparent 100%) !important;
+  background: radial-gradient(ellipse 80% 50% at 50% 0%, var(--aq-blue-dim) 0%, transparent 100%) !important;
   pointer-events: none !important;
   z-index: 0 !important;
 }
@@ -333,8 +334,8 @@
   border-color: var(--aq-border-active) !important;
   background: var(--aq-subtle) !important;
   box-shadow:
-    0 0 0 3px var(--aq-lime-dim),
-    0 0 20px var(--aq-lime-dim) !important;
+    0 0 0 3px var(--aq-blue-dim),
+    0 0 20px var(--aq-blue-dim) !important;
 }
 
 .aq-textarea::placeholder {
@@ -352,7 +353,7 @@
 .aq-submit-btn {
   width: 100% !important;
   height: 54px !important;
-  background: var(--aq-lime) !important;
+  background: var(--aq-blue) !important;
   border: none !important;
   border-radius: var(--aq-radius-md) !important;
   color: var(--aq-void) !important;
@@ -385,8 +386,8 @@
 .aq-submit-btn:hover {
   transform: translateY(-2px) !important;
   box-shadow:
-    0 8px 24px rgba(230, 255, 0, 0.3),
-    0 0 0 1px rgba(230, 255, 0, 0.5) !important;
+    0 8px 24px rgba(91, 164, 217, 0.3),
+    0 0 0 1px rgba(91, 164, 217, 0.5) !important;
 }
 
 .aq-submit-btn:active {
@@ -480,7 +481,7 @@
 }
 
 .aq-response-content strong {
-  color: var(--aq-lime) !important;
+  color: var(--aq-blue) !important;
   font-weight: 600 !important;
 }
 
@@ -492,8 +493,8 @@
 .aq-response-content code {
   font-family: 'SF Mono', 'Fira Code', monospace !important;
   font-size: 13px !important;
-  background: var(--aq-lime-dim) !important;
-  color: var(--aq-lime) !important;
+  background: var(--aq-blue-dim) !important;
+  color: var(--aq-blue) !important;
   padding: 2px 8px !important;
   border-radius: 4px !important;
 }
@@ -529,7 +530,7 @@
   width: 36px !important;
   height: 36px !important;
   opacity: 0.3 !important;
-  stroke: var(--aq-lime) !important;
+  stroke: var(--aq-blue) !important;
 }
 
 .aq-response-placeholder span {

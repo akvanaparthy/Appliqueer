@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════
-   APPLIQUEER SETTINGS — "Neon Noir" Design System
+   APPLIQUEER SETTINGS — "Ocean Blue" Design System
    Matching the sidepanel aesthetic
    ═══════════════════════════════════════════════════════════════ */
 
@@ -15,22 +15,22 @@
   /* Typography */
   --aq-font: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
 
-  /* Core Palette - Neon Noir */
+  /* Core Palette - Ocean Blue */
   --aq-void: #08080a;
   --aq-surface: #0e0e11;
   --aq-elevated: #151518;
   --aq-subtle: #1c1c20;
 
-  /* The Signature Lime */
-  --aq-lime: #e6ff00;
-  --aq-lime-hover: #d4ed00;
-  --aq-lime-dim: rgba(230, 255, 0, 0.08);
-  --aq-lime-glow: rgba(230, 255, 0, 0.15);
-  --aq-lime-bright: rgba(230, 255, 0, 0.25);
+  /* The Signature Blue */
+  --aq-blue: #5BA4D9;
+  --aq-blue-hover: #4A93C8;
+  --aq-blue-dim: rgba(91, 164, 217, 0.08);
+  --aq-blue-glow: rgba(91, 164, 217, 0.15);
+  --aq-blue-bright: rgba(91, 164, 217, 0.25);
 
-  /* Secondary Accent */
-  --aq-violet: #8b5cf6;
-  --aq-violet-dim: rgba(139, 92, 246, 0.12);
+  /* Secondary Accent - Navy */
+  --aq-navy: #1E3A5F;
+  --aq-navy-dim: rgba(30, 58, 95, 0.12);
 
   /* Text Hierarchy */
   --aq-text-primary: #fafafa;
@@ -96,7 +96,7 @@ body {
 .aq-options-logo-icon {
   width: 52px;
   height: 52px;
-  background: var(--aq-lime-dim);
+  background: var(--aq-blue-dim);
   border-radius: 14px;
   padding: 10px;
   display: flex;
@@ -209,19 +209,19 @@ body {
 }
 
 .aq-card-icon--accent {
-  background: var(--aq-lime-dim);
+  background: var(--aq-blue-dim);
 }
 
 .aq-card-icon--accent svg {
-  stroke: var(--aq-lime);
+  stroke: var(--aq-blue);
 }
 
 .aq-card-icon--secondary {
-  background: var(--aq-violet-dim);
+  background: var(--aq-navy-dim);
 }
 
 .aq-card-icon--secondary svg {
-  stroke: var(--aq-violet);
+  stroke: var(--aq-navy);
 }
 
 .aq-card-icon--muted svg {
@@ -334,7 +334,7 @@ body {
   outline: none;
   border-color: var(--aq-border-active);
   background: var(--aq-subtle);
-  box-shadow: 0 0 0 3px var(--aq-lime-dim), 0 0 16px var(--aq-lime-dim);
+  box-shadow: 0 0 0 3px var(--aq-blue-dim), 0 0 16px var(--aq-blue-dim);
 }
 
 .aq-input::placeholder,
@@ -419,7 +419,7 @@ body {
   appearance: none;
   width: 20px;
   height: 20px;
-  background: var(--aq-lime);
+  background: var(--aq-blue);
   border-radius: 50%;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
@@ -427,7 +427,7 @@ body {
 
 .aq-range::-webkit-slider-thumb:hover {
   transform: scale(1.1);
-  box-shadow: 0 0 12px var(--aq-lime-glow);
+  box-shadow: 0 0 12px var(--aq-blue-glow);
 }
 
 .aq-range-value {
@@ -435,7 +435,7 @@ body {
   text-align: center;
   font-size: 13px;
   font-weight: 600;
-  color: var(--aq-lime);
+  color: var(--aq-blue);
 }
 
 /* ─────────────────────────────────────────────────────────────────
@@ -456,13 +456,13 @@ body {
 }
 
 .aq-file-upload:hover {
-  border-color: var(--aq-lime);
-  background: var(--aq-lime-dim);
+  border-color: var(--aq-blue);
+  background: var(--aq-blue-dim);
 }
 
 .aq-file-upload.dragover {
-  border-color: var(--aq-lime);
-  background: var(--aq-lime-dim);
+  border-color: var(--aq-blue);
+  background: var(--aq-blue-dim);
 }
 
 .aq-file-upload svg {
@@ -478,7 +478,7 @@ body {
 }
 
 .aq-file-upload-link {
-  color: var(--aq-lime);
+  color: var(--aq-blue);
   font-weight: 500;
 }
 
@@ -513,14 +513,14 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--aq-violet-dim);
+  background: var(--aq-navy-dim);
   border-radius: 8px;
 }
 
 .aq-file-item-icon svg {
   width: 18px;
   height: 18px;
-  stroke: var(--aq-violet);
+  stroke: var(--aq-navy);
 }
 
 .aq-file-item-info {
@@ -587,7 +587,7 @@ body {
 }
 
 .aq-btn--primary {
-  background: var(--aq-lime);
+  background: var(--aq-blue);
   color: var(--aq-void);
   position: relative;
   overflow: hidden;
@@ -605,9 +605,9 @@ body {
 }
 
 .aq-btn--primary:hover {
-  background: var(--aq-lime-hover);
+  background: var(--aq-blue-hover);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px var(--aq-lime-glow);
+  box-shadow: 0 8px 24px var(--aq-blue-glow);
 }
 
 .aq-btn--secondary {

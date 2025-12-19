@@ -26,13 +26,13 @@
   // ─────────────────────────────────────────────────────────────
   const icons = {
     logo: `<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-      <g stroke="#e6ff00" stroke-width="2.5" stroke-linecap="round">
+      <g stroke="#5BA4D9" stroke-width="2.5" stroke-linecap="round">
         <line x1="24" y1="10" x2="24" y2="38"/>
         <line x1="10" y1="24" x2="38" y2="24"/>
         <line x1="14" y1="14" x2="34" y2="34"/>
         <line x1="34" y1="14" x2="14" y2="34"/>
       </g>
-      <circle cx="24" cy="24" r="4" fill="#e6ff00"/>
+      <circle cx="24" cy="24" r="4" fill="#5BA4D9"/>
     </svg>`,
 
     close: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
