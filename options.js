@@ -12,6 +12,7 @@ let settings = {
   apiKey: '',
   provider: 'openai',
   resume: '',
+  resumeFile: null, // {name, size, type, addedAt}
   additionalFiles: [],
   general: {
     model: '',
@@ -44,9 +45,10 @@ function cacheElements() {
   elements.toggleApiKey = document.getElementById('toggle-api-key');
   elements.modelSelect = document.getElementById('model-select');
   elements.resumeDropzone = document.getElementById('resume-dropzone');
-  elements.resumeFile = document.getElementById('resume-file');
+  elements.resumeFileInput = document.getElementById('resume-file');
   elements.resumeContent = document.getElementById('resume-content');
-  elements.resumeCharCount = document.getElementById('resume-char-count');
+  elements.resumeDisplayGroup = document.getElementById('resume-display-group');
+  elements.resumeFileDisplay = document.getElementById('resume-file-display');
   elements.fileList = document.getElementById('file-list');
   elements.addFileBtn = document.getElementById('add-file-btn');
   elements.additionalFile = document.getElementById('additional-file');
@@ -60,6 +62,7 @@ function cacheElements() {
   elements.exportBtn = document.getElementById('export-btn');
   elements.saveIndicator = document.getElementById('save-indicator');
   elements.fetchModelsBtn = document.getElementById('fetch-models-btn');
+  elements.resumeStatus = document.getElementById('resume-status');
 }
 
 // Load settings from storage
@@ -110,7 +113,7 @@ function bindEvents() {
 
   // Resume file upload
   elements.resumeDropzone.addEventListener('click', () => {
-    elements.resumeFile.click();
+    elements.resumeFileInput.click();
   });
 
   elements.resumeDropzone.addEventListener('dragover', (e) => {
@@ -129,16 +132,9 @@ function bindEvents() {
     if (file) handleResumeFile(file);
   });
 
-  elements.resumeFile.addEventListener('change', (e) => {
+  elements.resumeFileInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file) handleResumeFile(file);
-  });
-
-  // Resume content
-  elements.resumeContent.addEventListener('input', (e) => {
-    settings.resume = e.target.value;
-    updateCharCount();
-    markChanged();
   });
 
   // Additional files
@@ -211,8 +207,29 @@ function updateUI() {
   }
 
   updateApiKeyHelp();
-  updateCharCount();
+  renderResumeDisplay();
+  updateResumeStatus();
   renderFileList();
+}
+
+// Update resume status indicator
+function updateResumeStatus() {
+  const hasResume = settings.resume && settings.resume.trim().length > 0;
+  const charCount = settings.resume ? settings.resume.length : 0;
+  
+  if (hasResume) {
+    elements.resumeStatus.className = 'aq-resume-status aq-resume-status--uploaded';
+    elements.resumeStatus.innerHTML = `
+      <span class="aq-resume-status-dot"></span>
+      <span class="aq-resume-status-text">Uploaded (${charCount.toLocaleString()} chars)</span>
+    `;
+  } else {
+    elements.resumeStatus.className = 'aq-resume-status aq-resume-status--empty';
+    elements.resumeStatus.innerHTML = `
+      <span class="aq-resume-status-dot"></span>
+      <span class="aq-resume-status-text">No resume</span>
+    `;
+  }
 }
 
 // Update fetch models button state
@@ -336,31 +353,89 @@ function updateApiKeyHelp() {
   elements.apiKeyHelp.innerHTML = API_HELP[settings.provider] || 'Enter your API key';
 }
 
-// Update character count
-function updateCharCount() {
-  const count = settings.resume.length;
-  const max = 50000;
-  elements.resumeCharCount.textContent = `${count.toLocaleString()} / ${max.toLocaleString()}`;
-  
-  if (count > max) {
-    elements.resumeCharCount.style.color = 'var(--aq-danger)';
-  } else {
-    elements.resumeCharCount.style.color = '';
-  }
-}
-
 // Handle resume file
 async function handleResumeFile(file) {
   try {
+    console.log('Appliqueer: Reading resume file:', file.name);
+    
+    // Show loading state
+    elements.resumeDropzone.style.opacity = '0.5';
+    elements.resumeDropzone.style.pointerEvents = 'none';
+    
     const content = await readFileContent(file);
+    console.log('Appliqueer: Resume content length:', content.length);
+    
+    // Store both content and file metadata
     settings.resume = content;
+    settings.resumeFile = {
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      addedAt: Date.now()
+    };
+    
+    // Store in hidden textarea for form compatibility
     elements.resumeContent.value = content;
-    updateCharCount();
+    
+    // Update UI
+    renderResumeDisplay();
+    updateResumeStatus();
     markChanged();
+    
   } catch (error) {
+    console.error('Appliqueer: Failed to read resume file', error);
     alert('Failed to read file: ' + error.message);
+  } finally {
+    elements.resumeDropzone.style.opacity = '';
+    elements.resumeDropzone.style.pointerEvents = '';
   }
 }
+
+// Render resume file display
+function renderResumeDisplay() {
+  if (!settings.resumeFile) {
+    elements.resumeDisplayGroup.style.display = 'none';
+    return;
+  }
+  
+  elements.resumeDisplayGroup.style.display = 'block';
+  
+  const file = settings.resumeFile;
+  const sizeKB = (file.size / 1024).toFixed(1);
+  const charCount = settings.resume ? settings.resume.length : 0;
+  
+  elements.resumeFileDisplay.innerHTML = `
+    <div class="aq-file-item-content">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="aq-file-item-icon">
+        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+      </svg>
+      <div class="aq-file-item-info">
+        <span class="aq-file-item-name">${escapeHtml(file.name)}</span>
+        <span class="aq-file-item-meta">${sizeKB} KB • ${charCount.toLocaleString()} characters extracted</span>
+      </div>
+    </div>
+    <button class="aq-file-item-remove" onclick="removeResume()" title="Remove resume">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <line x1="18" y1="6" x2="6" y2="18"/>
+        <line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+  `;
+}
+
+// Remove resume
+function removeResume() {
+  settings.resume = '';
+  settings.resumeFile = null;
+  elements.resumeContent.value = '';
+  renderResumeDisplay();
+  updateResumeStatus();
+  markChanged();
+}
+
+// Make removeResume available globally for onclick
+window.removeResume = removeResume;
 
 // Handle additional file
 async function handleAdditionalFile(file) {
@@ -379,19 +454,65 @@ async function handleAdditionalFile(file) {
   }
 }
 
-// Read file content
-function readFileContent(file) {
+// Read file content (supports text files and PDFs)
+async function readFileContent(file) {
+  if (file.type === 'application/pdf') {
+    return await extractTextFromPDF(file);
+  }
+  
+  // Text-based files
   return new Promise((resolve, reject) => {
-    // For now, only support text files
-    if (file.type === 'application/pdf') {
-      reject(new Error('PDF files are not yet supported. Please paste the text content directly.'));
-      return;
-    }
-
     const reader = new FileReader();
     reader.onload = (e) => resolve(e.target.result);
     reader.onerror = () => reject(new Error('Failed to read file'));
     reader.readAsText(file);
+  });
+}
+
+// Extract text from PDF using pdf.js
+async function extractTextFromPDF(file) {
+  // Dynamically load pdf.js if not already loaded
+  if (!window.pdfjsLib) {
+    await loadPDFJS();
+  }
+  
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      try {
+        const typedArray = new Uint8Array(e.target.result);
+        const pdf = await window.pdfjsLib.getDocument({ data: typedArray }).promise;
+        
+        let fullText = '';
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i);
+          const textContent = await page.getTextContent();
+          const pageText = textContent.items.map(item => item.str).join(' ');
+          fullText += pageText + '\n\n';
+        }
+        
+        resolve(fullText.trim());
+      } catch (error) {
+        reject(new Error('Failed to parse PDF: ' + error.message));
+      }
+    };
+    reader.onerror = () => reject(new Error('Failed to read PDF file'));
+    reader.readAsArrayBuffer(file);
+  });
+}
+
+// Initialize pdf.js library (already loaded via script tag)
+function loadPDFJS() {
+  return new Promise((resolve, reject) => {
+    if (!window.pdfjsLib) {
+      reject(new Error('PDF.js library not loaded'));
+      return;
+    }
+    
+    // Set worker source to local file
+    window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'lib/pdf.worker.min.js';
+    console.log('Appliqueer: PDF.js worker initialized');
+    resolve();
   });
 }
 
@@ -463,6 +584,14 @@ async function saveSettings() {
     elements.saveBtn.disabled = true;
     elements.saveBtn.textContent = 'Saving...';
 
+    console.log('Appliqueer: Saving settings...', {
+      hasApiKey: !!settings.apiKey,
+      provider: settings.provider,
+      resumeLength: settings.resume ? settings.resume.length : 0,
+      additionalFilesCount: settings.additionalFiles.length,
+      model: settings.general.model
+    });
+
     const response = await chrome.runtime.sendMessage({
       type: 'SAVE_SETTINGS',
       settings: settings
@@ -472,10 +601,12 @@ async function saveSettings() {
       throw new Error(response.error);
     }
 
+    console.log('Appliqueer: Settings saved successfully');
     hasUnsavedChanges = false;
     showSaveIndicator();
 
   } catch (error) {
+    console.error('Appliqueer: Failed to save settings', error);
     alert('Failed to save settings: ' + error.message);
   } finally {
     elements.saveBtn.disabled = false;

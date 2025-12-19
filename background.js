@@ -6,6 +6,7 @@ const STORAGE_KEYS = {
   API_KEY: 'appliqueer_api_key',
   API_PROVIDER: 'appliqueer_api_provider',
   RESUME: 'appliqueer_resume',
+  RESUME_FILE: 'appliqueer_resume_file',
   ADDITIONAL_FILES: 'appliqueer_additional_files',
   SETTINGS: 'appliqueer_settings',
   CACHED_MODELS: 'appliqueer_cached_models'
@@ -158,13 +159,7 @@ function buildPrompt(question, additionalContext, resume, additionalFiles) {
   }
 
   // Build final prompt
-  const systemPrompt = `You are Appliqueer, an AI assistant specialized in helping with job applications, career advice, and professional communication. You have access to the user's resume and any additional documents they've provided.
-
-Your responses should be:
-- Tailored to the user's background and experience
-- Professional and actionable
-- Concise but comprehensive
-- Formatted with markdown when helpful (bullet points, bold for emphasis)
+  const systemPrompt = `Answer this as my POV based on my resume, dont include any fake or false information, only respond according to my resume and other additional files provided, only paragraphs, dont include long dashes or any other style
 
 ${context ? 'Here is the context about the user:\n\n' + context : 'Note: The user has not provided their resume yet. Encourage them to add it in settings for personalized responses.'}`;
 
@@ -209,7 +204,8 @@ async function callAnthropic(apiKey, prompt, settings) {
     headers: {
       'Content-Type': 'application/json',
       'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01'
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
     },
     body: JSON.stringify({
       model: settings.model || 'claude-3-haiku-20240307',
@@ -276,6 +272,9 @@ async function saveSettings(settings) {
     if (settings.resume !== undefined) {
       updates[STORAGE_KEYS.RESUME] = settings.resume;
     }
+    if (settings.resumeFile !== undefined) {
+      updates[STORAGE_KEYS.RESUME_FILE] = settings.resumeFile;
+    }
     if (settings.additionalFiles !== undefined) {
       updates[STORAGE_KEYS.ADDITIONAL_FILES] = settings.additionalFiles;
     }
@@ -299,6 +298,7 @@ async function getSettings() {
       STORAGE_KEYS.API_KEY,
       STORAGE_KEYS.API_PROVIDER,
       STORAGE_KEYS.RESUME,
+      STORAGE_KEYS.RESUME_FILE,
       STORAGE_KEYS.ADDITIONAL_FILES,
       STORAGE_KEYS.SETTINGS
     ]);
@@ -307,6 +307,7 @@ async function getSettings() {
       apiKey: result[STORAGE_KEYS.API_KEY] || '',
       provider: result[STORAGE_KEYS.API_PROVIDER] || 'openai',
       resume: result[STORAGE_KEYS.RESUME] || '',
+      resumeFile: result[STORAGE_KEYS.RESUME_FILE] || null,
       additionalFiles: result[STORAGE_KEYS.ADDITIONAL_FILES] || [],
       general: { ...DEFAULT_SETTINGS, ...result[STORAGE_KEYS.SETTINGS] }
     };
@@ -365,8 +366,7 @@ async function fetchModels(apiKey, provider) {
 
   } catch (error) {
     console.error('Appliqueer: Fetch models failed', error);
-    // Return fallback models on error
-    return { models: getFallbackModels(provider), error: error.message };
+    return { models: [], error: error.message };
   }
 }
 
@@ -401,7 +401,7 @@ async function fetchOpenAIModels(apiKey) {
 
   } catch (error) {
     console.error('Appliqueer: OpenAI fetch failed', error);
-    return getFallbackModels('openai');
+    throw error;
   }
 }
 
@@ -411,23 +411,24 @@ async function fetchAnthropicModels(apiKey) {
     const response = await fetch(API_ENDPOINTS.anthropicModels, {
       headers: {
         'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01'
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
       }
     });
 
-    if (response.ok) {
-      const data = await response.json();
-      return data.data.map(model => ({
-        id: model.id,
-        displayName: model.display_name || formatModelName(model.id)
-      }));
+    if (!response.ok) {
+      throw new Error(`Anthropic API error: ${response.status}`);
     }
+
+    const data = await response.json();
+    return data.data.map(model => ({
+      id: model.id,
+      displayName: model.display_name || formatModelName(model.id)
+    }));
   } catch (error) {
     console.error('Appliqueer: Anthropic fetch failed', error);
+    throw error;
   }
-  
-  // Fallback
-  return getFallbackModels('anthropic');
 }
 
 // Fetch Gemini models
@@ -453,9 +454,8 @@ async function fetchGeminiModels(apiKey) {
     }
   } catch (error) {
     console.error('Appliqueer: Gemini fetch failed', error);
+    throw error;
   }
-  
-  return getFallbackModels('gemini');
 }
 
 // Format model name to display name
@@ -470,33 +470,8 @@ function formatModelName(id) {
     .join(' ');
 }
 
-// Fallback models when API fails
-function getFallbackModels(provider) {
-  switch (provider) {
-    case 'openai':
-      return [
-        { id: 'gpt-4o', displayName: 'GPT-4o' },
-        { id: 'gpt-4o-mini', displayName: 'GPT-4o Mini' },
-        { id: 'gpt-4-turbo', displayName: 'GPT-4 Turbo' },
-        { id: 'gpt-3.5-turbo', displayName: 'GPT-3.5 Turbo' }
-      ];
-    case 'anthropic':
-      return [
-        { id: 'claude-3-5-sonnet-20241022', displayName: 'Claude 3.5 Sonnet' },
-        { id: 'claude-3-5-haiku-20241022', displayName: 'Claude 3.5 Haiku' },
-        { id: 'claude-3-haiku-20240307', displayName: 'Claude 3 Haiku' },
-        { id: 'claude-3-opus-20240229', displayName: 'Claude 3 Opus' }
-      ];
-    case 'gemini':
-      return [
-        { id: 'gemini-1.5-flash', displayName: 'Gemini 1.5 Flash' },
-        { id: 'gemini-1.5-pro', displayName: 'Gemini 1.5 Pro' },
-        { id: 'gemini-pro', displayName: 'Gemini Pro' }
-      ];
-    default:
-      return [];
-  }
-}
+// No fallback models - we want errors to be clear
+// Removed getFallbackModels function to make API validation explicit
 
 // Log extension startup
 console.log('Appliqueer: Background service worker initialized');
