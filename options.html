@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Appliqueer Settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="aq-options">
+    <!-- Header -->
+    <header class="aq-options-header">
+      <div class="aq-options-logo">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="aq-options-logo-icon">
+          <circle cx="12" cy="12" r="10" stroke="#e6ff00" stroke-width="2"/>
+          <path d="M12 6v12M6 12h12M8.5 8.5l7 7M15.5 8.5l-7 7" stroke="#e6ff00" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <div>
+          <h1 class="aq-options-title">Appliqueer</h1>
+          <p class="aq-options-subtitle">AI-Powered Resume Assistant</p>
+        </div>
+      </div>
+      <div class="aq-save-indicator" id="save-indicator">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        <span>Saved</span>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="aq-options-main">
+      <!-- API Configuration -->
+      <section class="aq-card">
+        <div class="aq-card-header">
+          <div class="aq-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0110 0v4"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="aq-card-title">API Configuration</h2>
+            <p class="aq-card-description">Configure your AI provider and API key</p>
+          </div>
+        </div>
+        
+        <div class="aq-card-body">
+          <div class="aq-form-group">
+            <label class="aq-label" for="api-provider">AI Provider</label>
+            <select class="aq-select" id="api-provider">
+              <option value="openai">OpenAI (GPT-4, GPT-3.5)</option>
+              <option value="anthropic">Anthropic (Claude)</option>
+              <option value="gemini">Google (Gemini)</option>
+            </select>
+          </div>
+
+          <div class="aq-form-group">
+            <label class="aq-label" for="api-key">API Key</label>
+            <div class="aq-input-wrapper">
+              <input 
+                type="password" 
+                class="aq-input" 
+                id="api-key" 
+                placeholder="Enter your API key..."
+              >
+              <button class="aq-input-toggle" id="toggle-api-key" type="button" aria-label="Toggle visibility">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" id="eye-icon">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <p class="aq-help-text" id="api-key-help">
+              Get your API key from the provider's dashboard
+            </p>
+          </div>
+
+          <div class="aq-form-group">
+            <label class="aq-label" for="model-select">Model</label>
+            <select class="aq-select" id="model-select">
+              <!-- Options populated dynamically -->
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- Resume Section -->
+      <section class="aq-card">
+        <div class="aq-card-header">
+          <div class="aq-card-icon aq-card-icon--accent">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+              <polyline points="10 9 9 9 8 9"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="aq-card-title">Your Resume</h2>
+            <p class="aq-card-description">Add your resume for personalized AI responses</p>
+          </div>
+        </div>
+        
+        <div class="aq-card-body">
+          <div class="aq-form-group">
+            <div class="aq-file-upload" id="resume-dropzone">
+              <input type="file" id="resume-file" accept=".txt,.pdf,.doc,.docx" hidden>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+              <p>Drop your resume here or <span class="aq-file-upload-link">browse</span></p>
+              <p class="aq-file-upload-hint">Supports TXT, PDF, DOC, DOCX</p>
+            </div>
+          </div>
+
+          <div class="aq-form-group">
+            <label class="aq-label">
+              Or paste your resume content
+              <span class="aq-char-count" id="resume-char-count">0 / 50,000</span>
+            </label>
+            <textarea 
+              class="aq-textarea" 
+              id="resume-content" 
+              placeholder="Paste your resume content here..."
+              rows="10"
+            ></textarea>
+          </div>
+        </div>
+      </section>
+
+      <!-- Additional Files -->
+      <section class="aq-card">
+        <div class="aq-card-header">
+          <div class="aq-card-icon aq-card-icon--secondary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>
+              <line x1="12" y1="11" x2="12" y2="17"/>
+              <line x1="9" y1="14" x2="15" y2="14"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="aq-card-title">Additional Documents</h2>
+            <p class="aq-card-description">Add cover letters, portfolios, or other documents</p>
+          </div>
+        </div>
+        
+        <div class="aq-card-body">
+          <div class="aq-file-list" id="file-list">
+            <!-- Files will be added here dynamically -->
+          </div>
+          
+          <button class="aq-btn aq-btn--secondary" id="add-file-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            Add Document
+          </button>
+          <input type="file" id="additional-file" accept=".txt,.pdf,.doc,.docx" hidden>
+        </div>
+      </section>
+
+      <!-- Advanced Settings -->
+      <section class="aq-card aq-card--collapsed" id="advanced-card">
+        <div class="aq-card-header aq-card-header--collapsible" id="advanced-toggle">
+          <div class="aq-card-icon aq-card-icon--muted">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="aq-card-title">Advanced Settings</h2>
+            <p class="aq-card-description">Fine-tune AI response behavior</p>
+          </div>
+          <svg class="aq-collapse-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </div>
+        
+        <div class="aq-card-body aq-card-body--collapsible">
+          <div class="aq-form-row">
+            <div class="aq-form-group">
+              <label class="aq-label" for="max-tokens">Max Response Length</label>
+              <input 
+                type="number" 
+                class="aq-input" 
+                id="max-tokens" 
+                value="1024"
+                min="100"
+                max="4096"
+              >
+              <p class="aq-help-text">Tokens (roughly 4 chars each)</p>
+            </div>
+
+            <div class="aq-form-group">
+              <label class="aq-label" for="temperature">Creativity</label>
+              <div class="aq-range-wrapper">
+                <input 
+                  type="range" 
+                  class="aq-range" 
+                  id="temperature" 
+                  min="0"
+                  max="1"
+                  step="0.1"
+                  value="0.7"
+                >
+                <span class="aq-range-value" id="temperature-value">0.7</span>
+              </div>
+              <p class="aq-help-text">Lower = more focused, Higher = more creative</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer Actions -->
+    <footer class="aq-options-footer">
+      <button class="aq-btn aq-btn--danger" id="reset-btn">
+        Reset All Settings
+      </button>
+      <div class="aq-footer-actions">
+        <button class="aq-btn aq-btn--secondary" id="export-btn">
+          Export Settings
+        </button>
+        <button class="aq-btn aq-btn--primary" id="save-btn">
+          Save Changes
+        </button>
+      </div>
+    </footer>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>

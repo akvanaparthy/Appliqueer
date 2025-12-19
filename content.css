@@ -1,0 +1,617 @@
+/* Appliqueer Content Script Styles */
+/* Premium UI matching the settings page aesthetic */
+
+#appliqueer-root {
+  /* Design tokens matching options page */
+  --aq-bg: #0f0f12 !important;
+  --aq-bg-card: rgba(255, 255, 255, 0.03) !important;
+  --aq-bg-input: rgba(255, 255, 255, 0.05) !important;
+  --aq-accent: #e6ff00 !important;
+  --aq-accent-hover: #d4ed00 !important;
+  --aq-accent-glow: rgba(230, 255, 0, 0.15) !important;
+  --aq-secondary: #6366f1 !important;
+  --aq-text: #ffffff !important;
+  --aq-text-secondary: rgba(255, 255, 255, 0.7) !important;
+  --aq-text-muted: rgba(255, 255, 255, 0.4) !important;
+  --aq-border: rgba(255, 255, 255, 0.08) !important;
+  --aq-border-focus: rgba(230, 255, 0, 0.5) !important;
+  --aq-radius: 16px !important;
+  --aq-radius-sm: 10px !important;
+  --aq-shadow: 0 8px 40px rgba(0, 0, 0, 0.5) !important;
+  --aq-transition: all 0.2s ease !important;
+  --aq-panel-width: 400px !important;
+
+  position: fixed !important;
+  top: 0 !important;
+  right: 0 !important;
+  z-index: 2147483647 !important;
+  font-family: 'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+  color: var(--aq-text) !important;
+  pointer-events: none !important;
+}
+
+#appliqueer-root * {
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* ========================================
+   FLOATING BUTTON (Collapsed State)
+   ======================================== */
+
+.aq-floating-btn {
+  position: fixed !important;
+  top: 50% !important;
+  right: 0 !important;
+  transform: translateY(-50%) !important;
+  width: 52px !important;
+  height: 52px !important;
+  background: var(--aq-bg) !important;
+  border: 1px solid var(--aq-border) !important;
+  border-right: none !important;
+  border-radius: var(--aq-radius) 0 0 var(--aq-radius) !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: var(--aq-shadow) !important;
+  transition: var(--aq-transition) !important;
+  pointer-events: auto !important;
+  overflow: hidden !important;
+}
+
+.aq-floating-btn:hover {
+  width: 60px !important;
+  background: var(--aq-bg-card) !important;
+  border-color: var(--aq-accent) !important;
+  box-shadow: var(--aq-shadow), 0 0 30px rgba(230, 255, 0, 0.2) !important;
+}
+
+.aq-floating-btn:hover .aq-btn-icon {
+  transform: rotate(90deg) scale(1.1) !important;
+}
+
+.aq-btn-icon {
+  width: 28px !important;
+  height: 28px !important;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.aq-btn-icon svg {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.aq-shortcut-hint {
+  position: fixed !important;
+  top: 50% !important;
+  right: 60px !important;
+  transform: translateY(-50%) translateX(10px) !important;
+  padding: 8px 14px !important;
+  background: var(--aq-bg) !important;
+  border: 1px solid var(--aq-border) !important;
+  border-radius: 8px !important;
+  color: var(--aq-text-muted) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  opacity: 0 !important;
+  transition: var(--aq-transition) !important;
+  pointer-events: none !important;
+  white-space: nowrap !important;
+}
+
+.aq-floating-btn:hover ~ .aq-shortcut-hint {
+  opacity: 1 !important;
+  transform: translateY(-50%) translateX(0) !important;
+}
+
+/* ========================================
+   EXPANDED PANEL
+   ======================================== */
+
+.aq-panel {
+  position: fixed !important;
+  top: 0 !important;
+  right: 0 !important;
+  width: var(--aq-panel-width) !important;
+  height: 100vh !important;
+  background: var(--aq-bg) !important;
+  border-left: 1px solid var(--aq-border) !important;
+  box-shadow: var(--aq-shadow) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  transform: translateX(100%) !important;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  pointer-events: auto !important;
+}
+
+.aq-panel.aq-panel--open {
+  transform: translateX(0) !important;
+}
+
+/* ========================================
+   PANEL HEADER
+   ======================================== */
+
+.aq-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 20px 24px !important;
+  border-bottom: 1px solid var(--aq-border) !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+}
+
+.aq-logo {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+.aq-logo-icon {
+  width: 32px !important;
+  height: 32px !important;
+}
+
+.aq-logo-text {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  color: var(--aq-text) !important;
+  letter-spacing: -0.5px !important;
+}
+
+.aq-close-btn {
+  width: 36px !important;
+  height: 36px !important;
+  background: transparent !important;
+  border: 1px solid var(--aq-border) !important;
+  border-radius: 10px !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: var(--aq-text-secondary) !important;
+  transition: var(--aq-transition) !important;
+}
+
+.aq-close-btn:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: var(--aq-text) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.aq-close-btn svg {
+  width: 18px !important;
+  height: 18px !important;
+}
+
+/* ========================================
+   PANEL BODY
+   ======================================== */
+
+.aq-body {
+  flex: 1 !important;
+  overflow-y: auto !important;
+  padding: 24px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 20px !important;
+}
+
+/* ========================================
+   CARDS (Same as settings page)
+   ======================================== */
+
+.aq-card {
+  background: var(--aq-bg-card) !important;
+  border: 1px solid var(--aq-border) !important;
+  border-radius: var(--aq-radius) !important;
+  overflow: hidden !important;
+  transition: var(--aq-transition) !important;
+}
+
+.aq-card:hover {
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.aq-card-header {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 16px 20px !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+  border-bottom: 1px solid var(--aq-border) !important;
+}
+
+.aq-card-icon {
+  width: 36px !important;
+  height: 36px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: var(--aq-accent-glow) !important;
+  border-radius: 10px !important;
+  flex-shrink: 0 !important;
+}
+
+.aq-card-icon svg {
+  width: 18px !important;
+  height: 18px !important;
+  stroke: var(--aq-accent) !important;
+}
+
+.aq-card-icon--secondary {
+  background: rgba(99, 102, 241, 0.15) !important;
+}
+
+.aq-card-icon--secondary svg {
+  stroke: var(--aq-secondary) !important;
+}
+
+.aq-card-title {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: var(--aq-text) !important;
+}
+
+.aq-card-body {
+  padding: 16px 20px !important;
+}
+
+/* ========================================
+   INPUT GROUPS
+   ======================================== */
+
+.aq-input-group {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+}
+
+.aq-label {
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  color: var(--aq-text-secondary) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+.aq-textarea {
+  width: 100% !important;
+  min-height: 90px !important;
+  padding: 14px 16px !important;
+  background: var(--aq-bg-input) !important;
+  border: 1px solid var(--aq-border) !important;
+  border-radius: var(--aq-radius-sm) !important;
+  color: var(--aq-text) !important;
+  font-family: inherit !important;
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+  resize: none !important;
+  transition: var(--aq-transition) !important;
+}
+
+.aq-textarea:focus {
+  outline: none !important;
+  border-color: var(--aq-border-focus) !important;
+  background: rgba(255, 255, 255, 0.07) !important;
+  box-shadow: 0 0 0 3px var(--aq-accent-glow) !important;
+}
+
+.aq-textarea::placeholder {
+  color: var(--aq-text-muted) !important;
+}
+
+.aq-textarea--small {
+  min-height: 60px !important;
+}
+
+/* ========================================
+   SUBMIT BUTTON
+   ======================================== */
+
+.aq-submit-btn {
+  width: 100% !important;
+  padding: 14px 24px !important;
+  background: var(--aq-accent) !important;
+  border: none !important;
+  border-radius: var(--aq-radius-sm) !important;
+  color: #000 !important;
+  font-family: inherit !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  transition: var(--aq-transition) !important;
+}
+
+.aq-submit-btn:hover:not(:disabled) {
+  background: var(--aq-accent-hover) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(230, 255, 0, 0.3) !important;
+}
+
+.aq-submit-btn:active:not(:disabled) {
+  transform: translateY(0) !important;
+}
+
+.aq-submit-btn:disabled {
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+}
+
+.aq-submit-btn svg {
+  width: 18px !important;
+  height: 18px !important;
+}
+
+/* Loading Spinner */
+.aq-spinner {
+  width: 18px !important;
+  height: 18px !important;
+  border: 2px solid rgba(0, 0, 0, 0.2) !important;
+  border-top-color: #000 !important;
+  border-radius: 50% !important;
+  animation: aq-spin 0.8s linear infinite !important;
+}
+
+@keyframes aq-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ========================================
+   RESPONSE AREA
+   ======================================== */
+
+.aq-response {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.aq-response-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin-bottom: 10px !important;
+}
+
+.aq-response-content {
+  flex: 1 !important;
+  padding: 16px 18px !important;
+  background: var(--aq-bg-card) !important;
+  border: 1px solid var(--aq-border) !important;
+  border-radius: var(--aq-radius) !important;
+  overflow-y: auto !important;
+  min-height: 140px !important;
+  max-height: 280px !important;
+}
+
+.aq-response-content p {
+  margin-bottom: 14px !important;
+  color: var(--aq-text) !important;
+  line-height: 1.7 !important;
+  font-size: 14px !important;
+}
+
+.aq-response-content p:last-child {
+  margin-bottom: 0 !important;
+}
+
+.aq-response-content ul,
+.aq-response-content ol {
+  margin: 14px 0 !important;
+  padding-left: 20px !important;
+}
+
+.aq-response-content li {
+  margin-bottom: 8px !important;
+  color: var(--aq-text) !important;
+  line-height: 1.6 !important;
+}
+
+.aq-response-content code {
+  background: var(--aq-accent-glow) !important;
+  padding: 3px 8px !important;
+  border-radius: 6px !important;
+  font-family: 'Consolas', 'Monaco', monospace !important;
+  font-size: 13px !important;
+  color: var(--aq-accent) !important;
+}
+
+.aq-response-content pre {
+  background: rgba(0, 0, 0, 0.4) !important;
+  padding: 14px !important;
+  border-radius: var(--aq-radius-sm) !important;
+  overflow-x: auto !important;
+  margin: 14px 0 !important;
+}
+
+.aq-response-content pre code {
+  background: transparent !important;
+  padding: 0 !important;
+  color: var(--aq-text) !important;
+}
+
+.aq-response-content strong {
+  color: var(--aq-accent) !important;
+  font-weight: 600 !important;
+}
+
+.aq-response-placeholder {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 100% !important;
+  min-height: 120px !important;
+  color: var(--aq-text-muted) !important;
+  text-align: center !important;
+  gap: 14px !important;
+  padding: 20px !important;
+}
+
+.aq-response-placeholder svg {
+  width: 44px !important;
+  height: 44px !important;
+  opacity: 0.4 !important;
+  stroke: var(--aq-accent) !important;
+}
+
+.aq-response-placeholder span {
+  font-size: 13px !important;
+  line-height: 1.5 !important;
+}
+
+/* ========================================
+   COPY BUTTON
+   ======================================== */
+
+.aq-copy-btn {
+  padding: 8px 14px !important;
+  background: var(--aq-bg-input) !important;
+  border: 1px solid var(--aq-border) !important;
+  border-radius: 8px !important;
+  color: var(--aq-text-secondary) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  font-family: inherit !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  transition: var(--aq-transition) !important;
+}
+
+.aq-copy-btn:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: var(--aq-text) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.aq-copy-btn svg {
+  width: 14px !important;
+  height: 14px !important;
+}
+
+/* ========================================
+   PANEL FOOTER
+   ======================================== */
+
+.aq-footer {
+  padding: 18px 24px !important;
+  border-top: 1px solid var(--aq-border) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+}
+
+.aq-settings-link {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  color: var(--aq-text-secondary) !important;
+  text-decoration: none !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: var(--aq-transition) !important;
+  background: none !important;
+  border: none !important;
+  font-family: inherit !important;
+  padding: 8px 14px !important;
+  border-radius: 8px !important;
+  margin: -8px -14px !important;
+}
+
+.aq-settings-link:hover {
+  color: var(--aq-accent) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+.aq-settings-link svg {
+  width: 18px !important;
+  height: 18px !important;
+}
+
+.aq-status {
+  font-size: 12px !important;
+  color: var(--aq-text-muted) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.aq-status-dot {
+  width: 8px !important;
+  height: 8px !important;
+  border-radius: 50% !important;
+  background: #4ade80 !important;
+  box-shadow: 0 0 8px rgba(74, 222, 128, 0.5) !important;
+}
+
+.aq-status-dot--error {
+  background: #f87171 !important;
+  box-shadow: 0 0 8px rgba(248, 113, 113, 0.5) !important;
+}
+
+.aq-status-dot--warning {
+  background: #fbbf24 !important;
+  box-shadow: 0 0 8px rgba(251, 191, 36, 0.5) !important;
+}
+
+/* ========================================
+   ERROR STATE
+   ======================================== */
+
+.aq-error {
+  padding: 14px 18px !important;
+  background: rgba(248, 113, 113, 0.1) !important;
+  border: 1px solid rgba(248, 113, 113, 0.25) !important;
+  border-radius: var(--aq-radius-sm) !important;
+  color: #fca5a5 !important;
+  font-size: 13px !important;
+  line-height: 1.5 !important;
+}
+
+/* ========================================
+   SCROLLBAR STYLING
+   ======================================== */
+
+.aq-body::-webkit-scrollbar,
+.aq-response-content::-webkit-scrollbar {
+  width: 6px !important;
+}
+
+.aq-body::-webkit-scrollbar-track,
+.aq-response-content::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+.aq-body::-webkit-scrollbar-thumb,
+.aq-response-content::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-radius: 3px !important;
+}
+
+.aq-body::-webkit-scrollbar-thumb:hover,
+.aq-response-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25) !important;
+}
+
+/* ========================================
+   PRINT STYLES
+   ======================================== */
+
+@media print {
+  #appliqueer-root {
+    display: none !important;
+  }
+}
