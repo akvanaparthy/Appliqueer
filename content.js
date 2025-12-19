@@ -25,14 +25,12 @@
   // Icons — Using the Appliqueer brand logo
   // ─────────────────────────────────────────────────────────────
   const icons = {
-    logo: `<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-      <g stroke="#5BA4D9" stroke-width="2.5" stroke-linecap="round">
-        <line x1="24" y1="10" x2="24" y2="38"/>
-        <line x1="10" y1="24" x2="38" y2="24"/>
-        <line x1="14" y1="14" x2="34" y2="34"/>
-        <line x1="34" y1="14" x2="14" y2="34"/>
-      </g>
-      <circle cx="24" cy="24" r="4" fill="#5BA4D9"/>
+    logo: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+      <path d="M30 100 L30 70 Q30 50 50 50 L70 50 Q90 50 90 70 L90 100"
+            fill="none" stroke="#5BA4D9" stroke-width="8" stroke-linecap="round"/>
+      <path d="M50 50 L60 20 L70 50"
+            fill="none" stroke="#6B8EC2" stroke-width="8" stroke-linecap="round"/>
+      <circle cx="60" cy="68" r="6" fill="#1E3A5F"/>
     </svg>`,
 
     close: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
@@ -81,8 +79,11 @@
       <div class="aq-panel" id="aq-panel">
         <header class="aq-header">
           <div class="aq-logo">
-            <span class="aq-logo-text">Appliqueer</span>
-            <p class="aq-logo-subtitle">AI Resume Assistant</p>
+            <div class="aq-logo-icon">${icons.logo}</div>
+            <div class="aq-logo-text-wrapper">
+              <span class="aq-logo-text">Appliqueer</span>
+              <p class="aq-logo-subtitle">AI Resume Assistant</p>
+            </div>
           </div>
           <button class="aq-close-btn" id="aq-close-btn" aria-label="Close">
             ${icons.close}
@@ -203,6 +204,13 @@
 
     questionInput.addEventListener('input', (e) => state.question = e.target.value);
     contextInput.addEventListener('input', (e) => state.additionalContext = e.target.value);
+
+    // Click outside to close
+    document.addEventListener('click', (e) => {
+      if (state.isExpanded && !panel.contains(e.target) && !toggleBtn.contains(e.target)) {
+        togglePanel(panel, toggleBtn);
+      }
+    });
 
     document.addEventListener('keydown', (e) => {
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'a') {

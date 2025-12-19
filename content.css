@@ -90,8 +90,8 @@
   right: 24px !important;
   width: 56px !important;
   height: 56px !important;
-  background: var(--aq-blue) !important;
-  border: none !important;
+  background: #FFFFFF !important;
+  border: 1px solid var(--aq-border) !important;
   border-radius: 50% !important;
   cursor: pointer !important;
   display: flex !important;
@@ -106,7 +106,7 @@
 .aq-floating-btn:hover {
   transform: translateY(-3px) !important;
   box-shadow: 0 12px 32px rgba(91, 164, 217, 0.3) !important;
-  background: var(--aq-blue-hover) !important;
+  border-color: var(--aq-blue) !important;
 }
 
 .aq-floating-btn:active {
@@ -128,7 +128,6 @@
 .aq-btn-icon svg {
   width: 100% !important;
   height: 100% !important;
-  filter: brightness(0) invert(1) !important;
 }
 
 .aq-floating-btn:hover .aq-btn-icon {
@@ -249,8 +248,8 @@
   flex: 1 !important;
   display: flex !important;
   flex-direction: column !important;
-  padding: var(--aq-space-xl) var(--aq-space-md) !important;
-  gap: var(--aq-space-md) !important;
+  padding: 20px !important;
+  gap: 18px !important;
   overflow-y: auto !important;
   overflow-x: hidden !important;
 }
@@ -314,7 +313,8 @@
   font-size: 12px !important;
   font-weight: 600 !important;
   color: var(--aq-text-secondary) !important;
-  padding: 0 var(--aq-space-sm) !important;
+  padding: 0 4px !important;
+  margin-bottom: 2px !important;
 }
 
 .aq-textarea {
@@ -556,7 +556,7 @@
    Footer
    ───────────────────────────────────────────────────────────────── */
 .aq-footer {
-  padding: var(--aq-space-lg) var(--aq-space-xl) !important;
+  padding: 16px 20px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
