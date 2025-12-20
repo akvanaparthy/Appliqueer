@@ -336,6 +336,7 @@
   display: flex !important;
   flex-direction: column !important;
   gap: 12px !important;
+  flex-shrink: 0 !important;
 }
 
 .aq-input-label {
@@ -523,6 +524,7 @@
    ───────────────────────────────────────────────────────────────── */
 .aq-length-group {
   gap: 12px !important;
+  flex-shrink: 0 !important;
 }
 
 .aq-length-options {
@@ -560,7 +562,9 @@
    ───────────────────────────────────────────────────────────────── */
 .aq-submit-btn {
   width: 100% !important;
+  min-height: 60px !important;
   height: 60px !important;
+  flex-shrink: 0 !important;
   background: var(--aq-blue) !important;
   border: none !important;
   border-radius: var(--aq-radius-md) !important;
