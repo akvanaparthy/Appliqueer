@@ -14,10 +14,10 @@
   const state = {
     isExpanded: false,
     isLoading: false,
-    question: '',
+    questions: [''],  // Array of questions
     jobDescription: '',
     additionalContext: '',
-    response: '',
+    responses: [],    // Array of {question, answer} objects
     error: null,
     hasApiKey: false,
     responseLength: 'concise',  // concise | medium | detailed
@@ -79,6 +79,15 @@
       <line x1="21" y1="12" x2="23" y2="12"/>
       <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
       <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+    </svg>`,
+
+    plus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="12" y1="5" x2="12" y2="19"/>
+      <line x1="5" y1="12" x2="19" y2="12"/>
+    </svg>`,
+
+    minus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="5" y1="12" x2="19" y2="12"/>
     </svg>`
   };
 
@@ -108,13 +117,21 @@
         </header>
 
         <div class="aq-body">
-          <div class="aq-input-group">
-            <label class="aq-input-label">Your Question</label>
-            <textarea
-              class="aq-textarea"
-              id="aq-question"
-              placeholder="Ask about your resume, career, or job applications..."
-            ></textarea>
+          <div class="aq-questions-section">
+            <div class="aq-section-header">
+              <label class="aq-input-label">Your Questions</label>
+              <button class="aq-add-question-btn" id="aq-add-question" title="Add another question">
+                ${icons.plus}
+              </button>
+            </div>
+            <div class="aq-questions-list" id="aq-questions-list">
+              <div class="aq-question-item" data-question-index="0">
+                <textarea
+                  class="aq-textarea aq-textarea--question"
+                  placeholder="Ask about your resume, career, or job applications..."
+                ></textarea>
+              </div>
+            </div>
           </div>
 
           <div class="aq-input-group">
@@ -262,7 +279,8 @@
     const closeBtn = root.querySelector('#aq-close-btn');
     const panel = root.querySelector('#aq-panel');
     const submitBtn = root.querySelector('#aq-submit-btn');
-    const questionInput = root.querySelector('#aq-question');
+    const questionsList = root.querySelector('#aq-questions-list');
+    const addQuestionBtn = root.querySelector('#aq-add-question');
     const jobDescInput = root.querySelector('#aq-job-description');
     const contextInput = root.querySelector('#aq-context');
     const copyBtn = root.querySelector('#aq-copy-btn');
@@ -276,7 +294,33 @@
       e.stopPropagation();
       handleSubmit();
     });
-    copyBtn.addEventListener('click', copyResponse);
+    copyBtn.addEventListener('click', copyAllResponses);
+
+    // Add question button
+    addQuestionBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      addQuestion();
+    });
+
+    // Question input handling (event delegation)
+    questionsList.addEventListener('input', (e) => {
+      if (e.target.classList.contains('aq-textarea--question')) {
+        const item = e.target.closest('.aq-question-item');
+        const index = parseInt(item.dataset.questionIndex);
+        state.questions[index] = e.target.value;
+      }
+    });
+
+    // Remove question button (event delegation)
+    questionsList.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const removeBtn = e.target.closest('.aq-remove-question-btn');
+      if (removeBtn) {
+        const item = removeBtn.closest('.aq-question-item');
+        const index = parseInt(item.dataset.questionIndex);
+        removeQuestion(index);
+      }
+    });
 
     // Length option toggle
     lengthOptions.addEventListener('click', (e) => {
@@ -303,7 +347,6 @@
       toggleDarkMode();
     });
 
-    questionInput.addEventListener('input', (e) => state.question = e.target.value);
     jobDescInput.addEventListener('input', (e) => state.jobDescription = e.target.value);
     contextInput.addEventListener('input', (e) => state.additionalContext = e.target.value);
 
@@ -336,24 +379,61 @@
     toggleBtn.style.pointerEvents = state.isExpanded ? 'none' : 'auto';
 
     if (state.isExpanded) {
-      setTimeout(() => document.getElementById('aq-question')?.focus(), 350);
+      setTimeout(() => {
+        const firstQuestion = document.querySelector('.aq-textarea--question');
+        firstQuestion?.focus();
+      }, 350);
     }
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // Question Management
+  // ─────────────────────────────────────────────────────────────
+  function addQuestion() {
+    state.questions.push('');
+    renderQuestions();
+  }
+
+  function removeQuestion(index) {
+    if (state.questions.length <= 1) return; // Keep at least one
+    state.questions.splice(index, 1);
+    renderQuestions();
+  }
+
+  function renderQuestions() {
+    const container = document.getElementById('aq-questions-list');
+    container.innerHTML = state.questions.map((q, i) => `
+      <div class="aq-question-item" data-question-index="${i}">
+        <textarea
+          class="aq-textarea aq-textarea--question"
+          placeholder="${i === 0 ? 'Ask about your resume, career, or job applications...' : 'Another question...'}"
+        >${escapeHtml(q)}</textarea>
+        ${state.questions.length > 1 ? `
+          <button class="aq-remove-question-btn" title="Remove question">
+            ${icons.minus}
+          </button>
+        ` : ''}
+      </div>
+    `).join('');
   }
 
   // ─────────────────────────────────────────────────────────────
   // Submit & Response
   // ─────────────────────────────────────────────────────────────
   async function handleSubmit() {
-    if (state.isLoading || !state.question.trim()) return;
+    // Filter out empty questions
+    const validQuestions = state.questions.filter(q => q.trim());
+    if (state.isLoading || validQuestions.length === 0) return;
 
     state.isLoading = true;
     state.error = null;
+    state.responses = [];
     updateUI();
 
     try {
       const response = await chrome.runtime.sendMessage({
         type: 'ASK_AI',
-        question: state.question.trim(),
+        questions: validQuestions.map(q => q.trim()),
         jobDescription: state.jobDescription.trim(),
         additionalContext: state.additionalContext.trim(),
         responseLength: state.responseLength
@@ -361,25 +441,29 @@
 
       if (response.error) {
         state.error = response.error;
-        state.response = '';
+        state.responses = [];
       } else {
-        // Parse JSON response if available
-        let answer = response.answer || 'No response received.';
-        try {
-          // Try to parse as JSON
-          const parsed = JSON.parse(answer);
-          if (parsed.response) {
-            answer = parsed.response;
+        // Parse JSON response with multiple answers
+        let answers = response.answers || [];
+        if (typeof response.answer === 'string') {
+          // Fallback: try to parse single answer as JSON with responses array
+          try {
+            const parsed = JSON.parse(response.answer);
+            if (parsed.responses && Array.isArray(parsed.responses)) {
+              answers = parsed.responses;
+            } else if (parsed.response) {
+              answers = [{ question: validQuestions[0], answer: parsed.response }];
+            }
+          } catch (e) {
+            answers = [{ question: validQuestions[0], answer: response.answer }];
           }
-        } catch (e) {
-          // Not JSON, use as-is
         }
-        state.response = answer;
+        state.responses = answers;
         state.error = null;
       }
     } catch (err) {
       state.error = 'Failed to get response. Please try again.';
-      state.response = '';
+      state.responses = [];
     } finally {
       state.isLoading = false;
       updateUI();
@@ -396,20 +480,30 @@
       submitBtn.innerHTML = `<div class="aq-spinner"></div><span>Thinking...</span>`;
     } else {
       submitBtn.disabled = false;
-      submitBtn.innerHTML = `<span>Get Answer</span>${icons.send}`;
+      submitBtn.innerHTML = `<span>Get Answers</span>${icons.send}`;
     }
 
     if (state.error) {
       responseContent.innerHTML = `<div class="aq-error">${escapeHtml(state.error)}</div>`;
       copyBtn.style.display = 'none';
-    } else if (state.response) {
-      responseContent.innerHTML = formatResponse(state.response);
+    } else if (state.responses.length > 0) {
+      responseContent.innerHTML = state.responses.map((r, i) => `
+        <div class="aq-response-item">
+          <div class="aq-response-question">
+            <span class="aq-response-number">Q${i + 1}</span>
+            <span>${escapeHtml(r.question)}</span>
+          </div>
+          <div class="aq-response-answer">
+            ${formatResponse(r.answer)}
+          </div>
+        </div>
+      `).join('<div class="aq-response-divider"></div>');
       copyBtn.style.display = 'flex';
     } else if (!state.isLoading) {
       responseContent.innerHTML = `
         <div class="aq-response-placeholder">
           ${icons.sparkle}
-          <span>Your answer will appear here</span>
+          <span>Your answers will appear here</span>
         </div>
       `;
       copyBtn.style.display = 'none';
@@ -435,9 +529,12 @@
     return div.innerHTML;
   }
 
-  async function copyResponse() {
+  async function copyAllResponses() {
     try {
-      await navigator.clipboard.writeText(state.response);
+      const text = state.responses.map((r, i) => 
+        `Q${i + 1}: ${r.question}\n\n${r.answer}`
+      ).join('\n\n---\n\n');
+      await navigator.clipboard.writeText(text);
       const copyBtn = document.getElementById('aq-copy-btn');
       const original = copyBtn.innerHTML;
       copyBtn.innerHTML = `${icons.check}<span>Copied!</span>`;

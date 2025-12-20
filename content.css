@@ -381,6 +381,143 @@
   min-height: 100px !important;
 }
 
+.aq-textarea--question {
+  min-height: 80px !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Questions Section
+   ───────────────────────────────────────────────────────────────── */
+.aq-questions-section {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+}
+
+.aq-section-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+
+.aq-add-question-btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 28px !important;
+  height: 28px !important;
+  background: var(--aq-blue-light) !important;
+  border: 1px solid var(--aq-blue) !important;
+  border-radius: var(--aq-radius-sm) !important;
+  color: var(--aq-blue) !important;
+  cursor: pointer !important;
+  transition: all 0.2s var(--aq-ease) !important;
+  padding: 0 !important;
+}
+
+.aq-add-question-btn:hover {
+  background: var(--aq-blue) !important;
+  color: white !important;
+}
+
+.aq-add-question-btn svg {
+  width: 16px !important;
+  height: 16px !important;
+}
+
+.aq-questions-list {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+}
+
+.aq-question-item {
+  position: relative !important;
+  display: flex !important;
+  gap: 8px !important;
+}
+
+.aq-question-item .aq-textarea {
+  flex: 1 !important;
+}
+
+.aq-remove-question-btn {
+  position: absolute !important;
+  top: 8px !important;
+  right: 8px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 24px !important;
+  height: 24px !important;
+  background: var(--aq-surface) !important;
+  border: 1px solid var(--aq-border) !important;
+  border-radius: 50% !important;
+  color: var(--aq-text-muted) !important;
+  cursor: pointer !important;
+  transition: all 0.2s var(--aq-ease) !important;
+  padding: 0 !important;
+  opacity: 0 !important;
+}
+
+.aq-question-item:hover .aq-remove-question-btn {
+  opacity: 1 !important;
+}
+
+.aq-remove-question-btn:hover {
+  background: #fee2e2 !important;
+  border-color: #fca5a5 !important;
+  color: #ef4444 !important;
+}
+
+.aq-remove-question-btn svg {
+  width: 14px !important;
+  height: 14px !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Multi-Response Display
+   ───────────────────────────────────────────────────────────────── */
+.aq-response-item {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+}
+
+.aq-response-question {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 10px !important;
+  font-size: 13px !important;
+  color: var(--aq-text-secondary) !important;
+  font-style: italic !important;
+}
+
+.aq-response-number {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 28px !important;
+  height: 20px !important;
+  background: var(--aq-blue-light) !important;
+  color: var(--aq-blue) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  font-style: normal !important;
+  border-radius: 4px !important;
+  padding: 0 6px !important;
+}
+
+.aq-response-answer {
+  padding-left: 38px !important;
+}
+
+.aq-response-divider {
+  height: 1px !important;
+  background: var(--aq-border) !important;
+  margin: 16px 0 !important;
+}
+
 /* ─────────────────────────────────────────────────────────────────
    Response Length Selector
    ───────────────────────────────────────────────────────────────── */

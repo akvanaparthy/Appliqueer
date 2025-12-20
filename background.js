@@ -47,7 +47,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 async function handleMessage(request, sender) {
   switch (request.type) {
     case 'ASK_AI':
-      return await handleAskAI(request.question, request.jobDescription, request.additionalContext, request.responseLength);
+      return await handleAskAI(request.questions, request.jobDescription, request.additionalContext, request.responseLength);
     
     case 'CHECK_STATUS':
       return await checkStatus();
@@ -84,9 +84,12 @@ async function checkStatus() {
   }
 }
 
-// Handle AI question
-async function handleAskAI(question, jobDescription, additionalContext, responseLength = 'concise') {
+// Handle AI questions (multiple)
+async function handleAskAI(questions, jobDescription, additionalContext, responseLength = 'concise') {
   try {
+    // Ensure questions is an array
+    const questionList = Array.isArray(questions) ? questions : [questions];
+    
     // Load configuration
     const config = await chrome.storage.local.get([
       STORAGE_KEYS.API_KEY,
@@ -107,26 +110,39 @@ async function handleAskAI(question, jobDescription, additionalContext, response
       return { error: 'Please configure your API key in the extension settings.' };
     }
 
-    // Build prompt
-    const prompt = buildPrompt(question, jobDescription, additionalContext, resume, additionalFiles, responseLength);
+    // Build prompt for multiple questions
+    const prompt = buildPrompt(questionList, jobDescription, additionalContext, resume, additionalFiles, responseLength);
 
     // Call appropriate API
-    let answer;
+    let rawAnswer;
     switch (provider) {
       case 'openai':
-        answer = await callOpenAI(apiKey, prompt, settings);
+        rawAnswer = await callOpenAI(apiKey, prompt, settings);
         break;
       case 'anthropic':
-        answer = await callAnthropic(apiKey, prompt, settings);
+        rawAnswer = await callAnthropic(apiKey, prompt, settings);
         break;
       case 'gemini':
-        answer = await callGemini(apiKey, prompt, settings);
+        rawAnswer = await callGemini(apiKey, prompt, settings);
         break;
       default:
         return { error: `Unsupported provider: ${provider}` };
     }
 
-    return { answer };
+    // Parse the JSON response with multiple answers
+    try {
+      const parsed = JSON.parse(rawAnswer);
+      if (parsed.responses && Array.isArray(parsed.responses)) {
+        return { answers: parsed.responses };
+      }
+    } catch (e) {
+      // Fallback if not JSON - return as single response
+    }
+    
+    // Fallback: return single answer mapped to first question
+    return { 
+      answers: [{ question: questionList[0], answer: rawAnswer }] 
+    };
 
   } catch (error) {
     console.error('Appliqueer: AI request failed', error);
@@ -134,8 +150,11 @@ async function handleAskAI(question, jobDescription, additionalContext, response
   }
 }
 
-// Build the prompt with context
-function buildPrompt(question, jobDescription, additionalContext, resume, additionalFiles, responseLength = 'concise') {
+// Build the prompt with context (supports multiple questions)
+function buildPrompt(questions, jobDescription, additionalContext, resume, additionalFiles, responseLength = 'concise') {
+  // Ensure questions is an array
+  const questionList = Array.isArray(questions) ? questions : [questions];
+  
   let context = '';
 
   // Add resume if available
@@ -165,27 +184,34 @@ function buildPrompt(question, jobDescription, additionalContext, resume, additi
 
   // Response length guidance
   const lengthGuidance = {
-    concise: '2-3 short paragraphs, straight to the point',
-    medium: '4-5 paragraphs with reasonable detail',
-    detailed: 'comprehensive response with full details, examples if relevant'
+    concise: '2-3 short paragraphs per question, straight to the point',
+    medium: '4-5 paragraphs per question with reasonable detail',
+    detailed: 'comprehensive response per question with full details, examples if relevant'
   };
 
-  // Build final prompt with JSON response format
-  const systemPrompt = `Answer this as my POV based on my resume. Don't include any fake or false information - only respond according to my resume and other additional files provided.
+  // Format questions for the prompt
+  const questionsFormatted = questionList.map((q, i) => `Q${i + 1}: ${q}`).join('\n');
 
-Response length: ${lengthGuidance[responseLength] || lengthGuidance.concise}
+  // Build final prompt with JSON response format for multiple questions
+  const systemPrompt = `Answer these questions from my POV based on my resume. Don't include any fake or false information - only respond according to my resume and other additional files provided.
 
-IMPORTANT: 
+Response length per question: ${lengthGuidance[responseLength] || lengthGuidance.concise}
+
+IMPORTANT:
 - Return your response as a JSON object with this exact structure:
-{"response": "your answer here with \\n for new paragraphs"}
+{"responses": [{"question": "the question text", "answer": "your answer with \\n for new paragraphs"}, ...]}
+- Provide a separate response object for each question in the responses array
 - No fabricated information, only provide from the context provided
-- Only answer in paragraphs, no bullets, no points, no long dashes. Write as person, the resume and context provided are yours, they are your experiences, acheievements or whatsoever provided in the context.
-- If a job description is provided, tailor the response to match the job requirements using relevant experience from the resume.
+- Only answer in paragraphs, no bullets, no points, no long dashes. Write as a person - the resume and context are yours, they are your experiences and achievements.
+- If a job description is provided, tailor responses to match the job requirements using relevant experience from the resume.
+
 ${context ? 'Here is the context about the user:\n\n' + context : 'Note: The user has not provided their resume yet. Encourage them to add it in settings for personalized responses.'}`;
+
+  const userPrompt = `Please answer the following ${questionList.length > 1 ? 'questions' : 'question'}:\n\n${questionsFormatted}`;
 
   return {
     system: systemPrompt,
-    user: question
+    user: userPrompt
   };
 }
 
