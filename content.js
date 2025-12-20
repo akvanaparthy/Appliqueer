@@ -19,7 +19,8 @@
     response: '',
     error: null,
     hasApiKey: false,
-    responseLength: 'concise'  // concise | medium | detailed
+    responseLength: 'concise',  // concise | medium | detailed
+    isDarkMode: false
   };
 
   // ─────────────────────────────────────────────────────────────
@@ -54,6 +55,22 @@
 
     sparkle: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
       <path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"/>
+    </svg>`,
+
+    moon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+    </svg>`,
+
+    sun: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="5"/>
+      <line x1="12" y1="1" x2="12" y2="3"/>
+      <line x1="12" y1="21" x2="12" y2="23"/>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+      <line x1="1" y1="12" x2="3" y2="12"/>
+      <line x1="21" y1="12" x2="23" y2="12"/>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
     </svg>`
   };
 
@@ -133,10 +150,15 @@
         </div>
 
         <footer class="aq-footer">
-          <button class="aq-settings-link" id="aq-settings-btn">
-            ${icons.settings}
-            <span>Settings</span>
-          </button>
+          <div class="aq-footer-actions">
+            <button class="aq-settings-link" id="aq-settings-btn">
+              ${icons.settings}
+              <span>Settings</span>
+            </button>
+            <button class="aq-theme-toggle" id="aq-theme-toggle" aria-label="Toggle dark mode">
+              ${icons.moon}
+            </button>
+          </div>
           <div class="aq-status">
             <span class="aq-status-dot" id="aq-status-dot"></span>
             <span id="aq-status-text">Ready</span>
@@ -155,6 +177,7 @@
     const root = createRoot();
     bindEvents(root);
     checkApiKeyStatus();
+    loadDarkModePreference();
   }
 
   async function checkApiKeyStatus() {
@@ -180,6 +203,40 @@
     }
   }
 
+  async function loadDarkModePreference() {
+    try {
+      const result = await chrome.storage.local.get(['darkMode']);
+      state.isDarkMode = result.darkMode || false;
+      applyDarkMode();
+    } catch (err) {
+      console.error('Appliqueer: Failed to load dark mode preference', err);
+    }
+  }
+
+  function applyDarkMode() {
+    const root = document.getElementById('appliqueer-root');
+    const themeToggle = document.getElementById('aq-theme-toggle');
+
+    if (state.isDarkMode) {
+      root.classList.add('aq-dark-mode');
+      if (themeToggle) themeToggle.innerHTML = icons.sun;
+    } else {
+      root.classList.remove('aq-dark-mode');
+      if (themeToggle) themeToggle.innerHTML = icons.moon;
+    }
+  }
+
+  async function toggleDarkMode() {
+    state.isDarkMode = !state.isDarkMode;
+    applyDarkMode();
+
+    try {
+      await chrome.storage.local.set({ darkMode: state.isDarkMode });
+    } catch (err) {
+      console.error('Appliqueer: Failed to save dark mode preference', err);
+    }
+  }
+
   // ─────────────────────────────────────────────────────────────
   // Event Handlers
   // ─────────────────────────────────────────────────────────────
@@ -192,6 +249,7 @@
     const contextInput = root.querySelector('#aq-context');
     const copyBtn = root.querySelector('#aq-copy-btn');
     const settingsBtn = root.querySelector('#aq-settings-btn');
+    const themeToggle = root.querySelector('#aq-theme-toggle');
     const lengthOptions = root.querySelector('#aq-length-options');
 
     toggleBtn.addEventListener('click', () => togglePanel(panel, toggleBtn));
@@ -220,6 +278,11 @@
     settingsBtn.addEventListener('click', (e) => {
       e.preventDefault();
       chrome.runtime.sendMessage({ type: 'OPEN_OPTIONS' });
+    });
+
+    themeToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleDarkMode();
     });
 
     questionInput.addEventListener('input', (e) => state.question = e.target.value);

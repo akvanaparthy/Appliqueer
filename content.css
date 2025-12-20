@@ -80,6 +80,36 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────
+   Dark Mode
+   ───────────────────────────────────────────────────────────────── */
+#appliqueer-root.aq-dark-mode {
+  /* Dark Theme Palette (matching settings page) */
+  --aq-bg: #08080a !important;
+  --aq-surface: #0e0e11 !important;
+  --aq-surface-hover: #1c1c20 !important;
+  --aq-elevated: #151518 !important;
+  --aq-subtle: #1c1c20 !important;
+
+  /* Text Hierarchy */
+  --aq-text-primary: #fafafa !important;
+  --aq-text-secondary: #a0a0a5 !important;
+  --aq-text-muted: #5a5a60 !important;
+
+  /* Borders */
+  --aq-border: rgba(255, 255, 255, 0.06) !important;
+  --aq-border-hover: rgba(255, 255, 255, 0.1) !important;
+
+  /* Blue adjustments for dark mode */
+  --aq-blue-light: rgba(91, 164, 217, 0.08) !important;
+  --aq-blue-subtle: rgba(91, 164, 217, 0.08) !important;
+
+  /* Shadows adjusted for dark */
+  --aq-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.4) !important;
+  --aq-shadow-md: 0 8px 16px rgba(0, 0, 0, 0.4) !important;
+  --aq-shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────
    Floating Action Button
    ───────────────────────────────────────────────────────────────── */
 .aq-floating-btn {
@@ -166,7 +196,7 @@
    Header
    ───────────────────────────────────────────────────────────────── */
 .aq-header {
-  padding: 28px 32px 24px !important;
+  padding: 20px 24px !important;
   background: var(--aq-surface) !important;
   border-bottom: 1px solid var(--aq-border) !important;
   display: flex !important;
@@ -230,15 +260,15 @@
   flex: 1 !important;
   display: flex !important;
   flex-direction: column !important;
-  padding: 32px !important;
-  gap: 36px !important;
+  padding: 24px !important;
+  gap: 24px !important;
   overflow-y: auto !important;
   overflow-x: hidden !important;
 }
 
-/* Scrollbar */
+/* Scrollbar - slim and minimal */
 .aq-body::-webkit-scrollbar {
-  width: 6px !important;
+  width: 4px !important;
 }
 
 .aq-body::-webkit-scrollbar-track {
@@ -246,12 +276,29 @@
 }
 
 .aq-body::-webkit-scrollbar-thumb {
-  background: var(--aq-border) !important;
-  border-radius: 3px !important;
+  background: var(--aq-border-hover) !important;
+  border-radius: 2px !important;
 }
 
 .aq-body::-webkit-scrollbar-thumb:hover {
+  background: var(--aq-text-muted) !important;
+}
+
+.aq-response-content::-webkit-scrollbar {
+  width: 4px !important;
+}
+
+.aq-response-content::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+.aq-response-content::-webkit-scrollbar-thumb {
   background: var(--aq-border-hover) !important;
+  border-radius: 2px !important;
+}
+
+.aq-response-content::-webkit-scrollbar-thumb:hover {
+  background: var(--aq-text-muted) !important;
 }
 
 /* ─────────────────────────────────────────────────────────────────
@@ -288,7 +335,7 @@
 .aq-input-group {
   display: flex !important;
   flex-direction: column !important;
-  gap: 16px !important;
+  gap: 12px !important;
 }
 
 .aq-input-label {
@@ -300,11 +347,11 @@
 
 .aq-textarea {
   width: 100% !important;
-  min-height: 160px !important;
+  min-height: 140px !important;
   background: var(--aq-surface) !important;
   border: 1px solid var(--aq-border) !important;
   border-radius: var(--aq-radius-md) !important;
-  padding: 20px !important;
+  padding: 16px !important;
   color: var(--aq-text-primary) !important;
   font-family: var(--aq-font-body) !important;
   font-size: 15px !important;
@@ -331,7 +378,7 @@
 }
 
 .aq-textarea--small {
-  min-height: 120px !important;
+  min-height: 100px !important;
 }
 
 /* ─────────────────────────────────────────────────────────────────
@@ -391,7 +438,7 @@
   gap: 12px !important;
   transition: all 0.2s var(--aq-ease) !important;
   box-shadow: 0 4px 12px rgba(91, 164, 217, 0.25) !important;
-  margin-top: 8px !important;
+  margin-top: 4px !important;
 }
 
 .aq-submit-btn:hover {
@@ -472,7 +519,7 @@
   background: var(--aq-surface) !important;
   border: 1px solid var(--aq-border) !important;
   border-radius: var(--aq-radius-md) !important;
-  padding: 28px !important;
+  padding: 20px !important;
   overflow-y: auto !important;
   box-shadow: var(--aq-shadow-sm) !important;
 }
@@ -578,7 +625,7 @@
    Footer
    ───────────────────────────────────────────────────────────────── */
 .aq-footer {
-  padding: 20px 32px !important;
+  padding: 16px 24px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
@@ -609,6 +656,37 @@
 }
 
 .aq-settings-link svg {
+  width: 18px !important;
+  height: 18px !important;
+}
+
+.aq-footer-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0 !important;
+}
+
+.aq-theme-toggle {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 36px !important;
+  height: 36px !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: var(--aq-radius-sm) !important;
+  color: var(--aq-text-secondary) !important;
+  cursor: pointer !important;
+  transition: all 0.2s var(--aq-ease) !important;
+  padding: 0 !important;
+}
+
+.aq-theme-toggle:hover {
+  background: var(--aq-surface-hover) !important;
+  color: var(--aq-text-primary) !important;
+}
+
+.aq-theme-toggle svg {
   width: 18px !important;
   height: 18px !important;
 }

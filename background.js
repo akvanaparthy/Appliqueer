@@ -170,9 +170,11 @@ function buildPrompt(question, additionalContext, resume, additionalFiles, respo
 
 Response length: ${lengthGuidance[responseLength] || lengthGuidance.concise}
 
-IMPORTANT: Return your response as a JSON object with this exact structure:
+IMPORTANT: 
+- Return your response as a JSON object with this exact structure:
 {"response": "your answer here with \\n for new paragraphs"}
-
+- No fabricated information, only provide from the context provided
+- Only answer in paragraphs, no bullets, no points, no long dashes. Write as person, the resume and context provided are yours, they are your experiences, acheievements or whatsoever provided in the context.
 ${context ? 'Here is the context about the user:\n\n' + context : 'Note: The user has not provided their resume yet. Encourage them to add it in settings for personalized responses.'}`;
 
   return {
