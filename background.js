@@ -47,7 +47,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 async function handleMessage(request, sender) {
   switch (request.type) {
     case 'ASK_AI':
-      return await handleAskAI(request.question, request.additionalContext, request.responseLength);
+      return await handleAskAI(request.question, request.jobDescription, request.additionalContext, request.responseLength);
     
     case 'CHECK_STATUS':
       return await checkStatus();
@@ -85,7 +85,7 @@ async function checkStatus() {
 }
 
 // Handle AI question
-async function handleAskAI(question, additionalContext, responseLength = 'concise') {
+async function handleAskAI(question, jobDescription, additionalContext, responseLength = 'concise') {
   try {
     // Load configuration
     const config = await chrome.storage.local.get([
@@ -108,7 +108,7 @@ async function handleAskAI(question, additionalContext, responseLength = 'concis
     }
 
     // Build prompt
-    const prompt = buildPrompt(question, additionalContext, resume, additionalFiles, responseLength);
+    const prompt = buildPrompt(question, jobDescription, additionalContext, resume, additionalFiles, responseLength);
 
     // Call appropriate API
     let answer;
@@ -135,7 +135,7 @@ async function handleAskAI(question, additionalContext, responseLength = 'concis
 }
 
 // Build the prompt with context
-function buildPrompt(question, additionalContext, resume, additionalFiles, responseLength = 'concise') {
+function buildPrompt(question, jobDescription, additionalContext, resume, additionalFiles, responseLength = 'concise') {
   let context = '';
 
   // Add resume if available
@@ -153,9 +153,14 @@ function buildPrompt(question, additionalContext, resume, additionalFiles, respo
     });
   }
 
-  // Add user's additional context
+  // Add job description if provided
+  if (jobDescription && jobDescription.trim()) {
+    context += `## Job Description / Requirements:\n${jobDescription.trim()}\n\n`;
+  }
+
+  // Add user's focus/instructions
   if (additionalContext && additionalContext.trim()) {
-    context += `## Additional Context Provided:\n${additionalContext.trim()}\n\n`;
+    context += `## User's Focus / Instructions:\n${additionalContext.trim()}\n\n`;
   }
 
   // Response length guidance
@@ -175,6 +180,7 @@ IMPORTANT:
 {"response": "your answer here with \\n for new paragraphs"}
 - No fabricated information, only provide from the context provided
 - Only answer in paragraphs, no bullets, no points, no long dashes. Write as person, the resume and context provided are yours, they are your experiences, acheievements or whatsoever provided in the context.
+- If a job description is provided, tailor the response to match the job requirements using relevant experience from the resume.
 ${context ? 'Here is the context about the user:\n\n' + context : 'Note: The user has not provided their resume yet. Encourage them to add it in settings for personalized responses.'}`;
 
   return {

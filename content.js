@@ -15,6 +15,7 @@
     isExpanded: false,
     isLoading: false,
     question: '',
+    jobDescription: '',
     additionalContext: '',
     response: '',
     error: null,
@@ -117,11 +118,20 @@
           </div>
 
           <div class="aq-input-group">
-            <label class="aq-input-label">Context (optional)</label>
+            <label class="aq-input-label">Job Description (optional)</label>
+            <textarea
+              class="aq-textarea aq-textarea--small"
+              id="aq-job-description"
+              placeholder="Paste the job posting or requirements here..."
+            ></textarea>
+          </div>
+
+          <div class="aq-input-group">
+            <label class="aq-input-label">Focus / Instructions (optional)</label>
             <textarea
               class="aq-textarea aq-textarea--small"
               id="aq-context"
-              placeholder="Paste a job description or relevant details..."
+              placeholder="What to highlight from your resume, preferred response style..."
             ></textarea>
           </div>
 
@@ -253,6 +263,7 @@
     const panel = root.querySelector('#aq-panel');
     const submitBtn = root.querySelector('#aq-submit-btn');
     const questionInput = root.querySelector('#aq-question');
+    const jobDescInput = root.querySelector('#aq-job-description');
     const contextInput = root.querySelector('#aq-context');
     const copyBtn = root.querySelector('#aq-copy-btn');
     const settingsBtn = root.querySelector('#aq-settings-btn');
@@ -293,6 +304,7 @@
     });
 
     questionInput.addEventListener('input', (e) => state.question = e.target.value);
+    jobDescInput.addEventListener('input', (e) => state.jobDescription = e.target.value);
     contextInput.addEventListener('input', (e) => state.additionalContext = e.target.value);
 
     // Click outside to close
@@ -342,6 +354,7 @@
       const response = await chrome.runtime.sendMessage({
         type: 'ASK_AI',
         question: state.question.trim(),
+        jobDescription: state.jobDescription.trim(),
         additionalContext: state.additionalContext.trim(),
         responseLength: state.responseLength
       });
