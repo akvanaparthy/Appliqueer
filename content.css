@@ -721,14 +721,190 @@
 /* ─────────────────────────────────────────────────────────────────
    Responsive
    ───────────────────────────────────────────────────────────────── */
-@media (max-width: 460px) {
+
+/* Tablets and small laptops (768px - 1024px) */
+@media (max-width: 1024px) and (min-width: 769px) {
+  #appliqueer-root {
+    --aq-panel-width: 400px !important;
+  }
+
+  .aq-header {
+    padding: 18px 20px !important;
+  }
+
+  .aq-body {
+    padding: 20px !important;
+    gap: 20px !important;
+  }
+
+  .aq-footer {
+    padding: 14px 20px !important;
+  }
+}
+
+/* Small tablets and large phones (481px - 768px) */
+@media (max-width: 768px) and (min-width: 481px) {
+  #appliqueer-root {
+    --aq-panel-width: 380px !important;
+  }
+
+  .aq-header {
+    padding: 16px 18px !important;
+  }
+
+  .aq-body {
+    padding: 18px !important;
+    gap: 18px !important;
+  }
+
+  .aq-textarea {
+    min-height: 120px !important;
+    font-size: 14px !important;
+  }
+
+  .aq-textarea--small {
+    min-height: 90px !important;
+  }
+
+  .aq-submit-btn {
+    height: 54px !important;
+    font-size: 15px !important;
+  }
+
+  .aq-footer {
+    padding: 12px 18px !important;
+  }
+
+  .aq-floating-btn {
+    width: 56px !important;
+    height: 56px !important;
+    bottom: 20px !important;
+    right: 20px !important;
+  }
+
+  .aq-btn-icon {
+    width: 28px !important;
+    height: 28px !important;
+  }
+}
+
+/* Mobile devices (up to 480px) */
+@media (max-width: 480px) {
   .aq-panel {
     width: 100% !important;
   }
 
+  .aq-header {
+    padding: 14px 16px !important;
+  }
+
+  .aq-logo-text {
+    font-size: 18px !important;
+  }
+
+  .aq-logo-subtitle {
+    font-size: 13px !important;
+  }
+
+  .aq-body {
+    padding: 16px !important;
+    gap: 16px !important;
+  }
+
+  .aq-input-label {
+    font-size: 14px !important;
+  }
+
+  .aq-textarea {
+    min-height: 110px !important;
+    padding: 14px !important;
+    font-size: 14px !important;
+  }
+
+  .aq-textarea--small {
+    min-height: 80px !important;
+  }
+
+  .aq-length-btn {
+    padding: 9px 12px !important;
+    font-size: 12px !important;
+  }
+
+  .aq-submit-btn {
+    height: 52px !important;
+    font-size: 15px !important;
+  }
+
+  .aq-response-content {
+    padding: 16px !important;
+    font-size: 14px !important;
+  }
+
+  .aq-footer {
+    padding: 12px 16px !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    align-items: flex-start !important;
+  }
+
+  .aq-footer-actions {
+    width: 100% !important;
+    justify-content: space-between !important;
+  }
+
+  .aq-settings-link {
+    font-size: 13px !important;
+  }
+
+  .aq-status {
+    font-size: 12px !important;
+  }
+
   .aq-floating-btn {
-    bottom: 24px !important;
-    right: 24px !important;
+    width: 52px !important;
+    height: 52px !important;
+    bottom: 16px !important;
+    right: 16px !important;
+  }
+
+  .aq-btn-icon {
+    width: 26px !important;
+    height: 26px !important;
+  }
+
+  .aq-close-btn {
+    width: 32px !important;
+    height: 32px !important;
+  }
+}
+
+/* Very small mobile devices (up to 360px) */
+@media (max-width: 360px) {
+  .aq-header {
+    padding: 12px 14px !important;
+  }
+
+  .aq-logo-text {
+    font-size: 17px !important;
+  }
+
+  .aq-body {
+    padding: 14px !important;
+    gap: 14px !important;
+  }
+
+  .aq-textarea {
+    min-height: 100px !important;
+    padding: 12px !important;
+  }
+
+  .aq-submit-btn {
+    height: 48px !important;
+    font-size: 14px !important;
+  }
+
+  .aq-footer {
+    padding: 10px 14px !important;
   }
 }
 
