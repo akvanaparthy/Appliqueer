@@ -196,11 +196,15 @@
 
     toggleBtn.addEventListener('click', () => togglePanel(panel, toggleBtn));
     closeBtn.addEventListener('click', () => togglePanel(panel, toggleBtn));
-    submitBtn.addEventListener('click', handleSubmit);
+    submitBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      handleSubmit();
+    });
     copyBtn.addEventListener('click', copyResponse);
 
     // Length option toggle
     lengthOptions.addEventListener('click', (e) => {
+      e.stopPropagation();
       const btn = e.target.closest('.aq-length-btn');
       if (!btn) return;
       
