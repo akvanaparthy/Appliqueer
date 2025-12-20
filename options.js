@@ -61,7 +61,6 @@ function cacheElements() {
   elements.temperatureValue = document.getElementById('temperature-value');
   elements.saveBtn = document.getElementById('save-btn');
   elements.resetBtn = document.getElementById('reset-btn');
-  elements.exportBtn = document.getElementById('export-btn');
   elements.saveIndicator = document.getElementById('save-indicator');
   elements.fetchModelsBtn = document.getElementById('fetch-models-btn');
   elements.resumeStatus = document.getElementById('resume-status');
@@ -228,9 +227,6 @@ function bindEvents() {
       location.reload();
     }
   });
-
-  // Export button
-  elements.exportBtn.addEventListener('click', exportSettings);
 
   // Theme toggle
   elements.themeToggle.addEventListener('click', toggleTheme);
@@ -675,24 +671,4 @@ function showSaveIndicator() {
   setTimeout(() => {
     elements.saveIndicator.classList.remove('visible');
   }, 2000);
-}
-
-// Export settings
-function exportSettings() {
-  const exportData = {
-    ...settings,
-    apiKey: '***REDACTED***', // Don't export API key
-    exportedAt: new Date().toISOString()
-  };
-
-  const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'appliqueer-settings.json';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
 }

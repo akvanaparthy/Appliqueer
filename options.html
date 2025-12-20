@@ -20,20 +20,19 @@
           <p class="aq-options-subtitle">AI Resume Assistant</p>
         </div>
       </div>
-      <div style="display: flex; align-items: center; gap: 12px;">
-        <button class="aq-theme-toggle-btn" id="theme-toggle" aria-label="Toggle theme">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-          </svg>
-        </button>
-        <div class="aq-save-indicator" id="save-indicator">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-            <polyline points="20 6 9 17 4 12"/>
-          </svg>
-          <span>Saved</span>
-        </div>
-      </div>
+      <button class="aq-theme-toggle-btn" id="theme-toggle" aria-label="Toggle theme">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </button>
     </header>
+
+    <div class="aq-save-indicator" id="save-indicator">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+      <span>Saved</span>
+    </div>
 
     <!-- Main Content -->
     <main class="aq-options-main">
@@ -127,14 +126,14 @@
         <div class="aq-card-body">
           <div class="aq-form-group">
             <div class="aq-file-upload" id="resume-dropzone">
-              <input type="file" id="resume-file" accept=".txt,.pdf,.doc,.docx" hidden>
+              <input type="file" id="resume-file" accept=".txt,.pdf" hidden>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
                 <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
                 <polyline points="17 8 12 3 7 8"/>
                 <line x1="12" y1="3" x2="12" y2="15"/>
               </svg>
               <p>Drop your resume here or <span class="aq-file-upload-link">browse</span></p>
-              <p class="aq-file-upload-hint">Supports TXT, PDF, DOC, DOCX</p>
+              <p class="aq-file-upload-hint">Supports TXT and PDF files</p>
             </div>
           </div>
 
@@ -179,7 +178,7 @@
             </svg>
             Add Document
           </button>
-          <input type="file" id="additional-file" accept=".txt,.pdf,.doc,.docx" hidden>
+          <input type="file" id="additional-file" accept=".txt,.pdf" hidden>
         </div>
       </section>
 
@@ -242,14 +241,9 @@
       <button class="aq-btn aq-btn--danger" id="reset-btn">
         Reset All Settings
       </button>
-      <div class="aq-footer-actions">
-        <button class="aq-btn aq-btn--secondary" id="export-btn">
-          Export Settings
-        </button>
-        <button class="aq-btn aq-btn--primary" id="save-btn">
-          Save Changes
-        </button>
-      </div>
+      <button class="aq-btn aq-btn--primary" id="save-btn">
+        Save Changes
+      </button>
     </footer>
   </div>
 

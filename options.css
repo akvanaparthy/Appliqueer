@@ -170,6 +170,9 @@ body {
 }
 
 .aq-save-indicator {
+  position: fixed;
+  top: 24px;
+  right: 24px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -183,6 +186,7 @@ body {
   opacity: 0;
   transform: translateY(-8px);
   transition: var(--aq-transition);
+  z-index: 100;
 }
 
 .aq-save-indicator.visible {
@@ -721,14 +725,10 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 14px;
   margin-top: 48px;
   padding-top: 28px;
   border-top: 1px solid var(--aq-border);
-}
-
-.aq-footer-actions {
-  display: flex;
-  gap: 14px;
 }
 
 /* ─────────────────────────────────────────────────────────────────
@@ -751,15 +751,11 @@ body {
 
   .aq-options-footer {
     flex-direction: column;
-    gap: 18px;
+    gap: 14px;
   }
 
-  .aq-footer-actions {
+  .aq-options-footer .aq-btn {
     width: 100%;
-  }
-
-  .aq-footer-actions .aq-btn {
-    flex: 1;
   }
 }
 
