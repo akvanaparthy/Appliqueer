@@ -488,10 +488,12 @@
 .aq-response-question {
   display: flex !important;
   align-items: flex-start !important;
-  gap: 10px !important;
+  gap: 8px !important;
   font-size: 13px !important;
   color: var(--aq-text-secondary) !important;
   font-style: italic !important;
+  flex: 1 !important;
+  min-width: 0 !important;
 }
 
 .aq-response-number {
@@ -507,16 +509,88 @@
   font-style: normal !important;
   border-radius: 4px !important;
   padding: 0 6px !important;
+  flex-shrink: 0 !important;
 }
 
-.aq-response-answer {
-  padding-left: 38px !important;
+.aq-response-question-text {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
 }
 
-.aq-response-divider {
-  height: 1px !important;
-  background: var(--aq-border) !important;
-  margin: 16px 0 !important;
+/* Response Cards */
+.aq-response-card {
+  background: var(--aq-surface) !important;
+  border: 1px solid var(--aq-border) !important;
+  border-radius: var(--aq-radius-md) !important;
+  overflow: hidden !important;
+  margin-bottom: 16px !important;
+}
+
+.aq-response-card:last-child {
+  margin-bottom: 0 !important;
+}
+
+.aq-response-card-header {
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  padding: 12px 16px !important;
+  background: var(--aq-bg) !important;
+  border-bottom: 1px solid var(--aq-border) !important;
+}
+
+.aq-response-card-body {
+  padding: 16px !important;
+  font-size: 14px !important;
+  line-height: 1.7 !important;
+  color: var(--aq-text-primary) !important;
+}
+
+.aq-response-card-body p {
+  margin: 0 !important;
+}
+
+.aq-response-card-body p + p {
+  margin-top: 12px !important;
+}
+
+/* Single Copy Button */
+.aq-copy-single-btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 28px !important;
+  height: 28px !important;
+  background: transparent !important;
+  border: 1px solid var(--aq-border) !important;
+  border-radius: var(--aq-radius-sm) !important;
+  color: var(--aq-text-muted) !important;
+  cursor: pointer !important;
+  transition: all 0.2s var(--aq-ease) !important;
+  padding: 0 !important;
+  flex-shrink: 0 !important;
+}
+
+.aq-copy-single-btn:hover {
+  background: var(--aq-surface-hover) !important;
+  border-color: var(--aq-border-hover) !important;
+  color: var(--aq-text-primary) !important;
+}
+
+.aq-copy-single-btn--copied {
+  background: var(--aq-success) !important;
+  border-color: var(--aq-success) !important;
+  color: white !important;
+}
+
+.aq-copy-single-btn svg {
+  width: 14px !important;
+  height: 14px !important;
 }
 
 /* ─────────────────────────────────────────────────────────────────

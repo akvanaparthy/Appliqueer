@@ -560,17 +560,32 @@
       copyBtn.style.display = 'none';
     } else if (state.responses.length > 0) {
       responseContent.innerHTML = state.responses.map((r, i) => `
-        <div class="aq-response-item">
-          <div class="aq-response-question">
-            <span class="aq-response-number">Q${i + 1}</span>
-            <span>${escapeHtml(r.question)}</span>
+        <div class="aq-response-card" data-response-index="${i}">
+          <div class="aq-response-card-header">
+            <div class="aq-response-question">
+              <span class="aq-response-number">Q${i + 1}</span>
+              <span class="aq-response-question-text">${escapeHtml(r.question)}</span>
+            </div>
+            <button class="aq-copy-single-btn" data-index="${i}" title="Copy this answer">
+              ${icons.copy}
+            </button>
           </div>
-          <div class="aq-response-answer">
+          <div class="aq-response-card-body">
             ${formatResponse(r.answer)}
           </div>
         </div>
-      `).join('<div class="aq-response-divider"></div>');
+      `).join('');
       copyBtn.style.display = 'flex';
+      copyBtn.querySelector('span').textContent = 'Copy All';
+      
+      // Bind copy buttons for individual responses
+      responseContent.querySelectorAll('.aq-copy-single-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const index = parseInt(btn.dataset.index);
+          copySingleResponse(index);
+        });
+      });
     } else if (!state.isLoading) {
       responseContent.innerHTML = `
         <div class="aq-response-placeholder">
@@ -613,6 +628,29 @@
       setTimeout(() => copyBtn.innerHTML = original, 2000);
     } catch (err) {
       console.error('Appliqueer: Copy failed', err);
+    }
+  }
+
+  async function copySingleResponse(index) {
+    try {
+      const response = state.responses[index];
+      if (!response) return;
+      
+      await navigator.clipboard.writeText(response.answer);
+      
+      // Show feedback on the specific button
+      const btn = document.querySelector(`.aq-copy-single-btn[data-index="${index}"]`);
+      if (btn) {
+        const original = btn.innerHTML;
+        btn.innerHTML = icons.check;
+        btn.classList.add('aq-copy-single-btn--copied');
+        setTimeout(() => {
+          btn.innerHTML = original;
+          btn.classList.remove('aq-copy-single-btn--copied');
+        }, 1500);
+      }
+    } catch (err) {
+      console.error('Appliqueer: Copy single failed', err);
     }
   }
 
