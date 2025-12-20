@@ -15,6 +15,15 @@
   /* Typography */
   --aq-font: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
 
+  /* Spacing & Radii */
+  --aq-radius: 16px;
+  --aq-radius-sm: 10px;
+  --aq-radius-xs: 6px;
+  --aq-transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Dark Mode (Default) */
+body {
   /* Core Palette - Ocean Blue */
   --aq-void: #08080a;
   --aq-surface: #0e0e11;
@@ -24,6 +33,7 @@
   /* The Signature Blue */
   --aq-blue: #5BA4D9;
   --aq-blue-hover: #4A93C8;
+  --aq-blue-link: #7EC4F3;
   --aq-blue-dim: rgba(91, 164, 217, 0.08);
   --aq-blue-glow: rgba(91, 164, 217, 0.15);
   --aq-blue-bright: rgba(91, 164, 217, 0.25);
@@ -47,12 +57,47 @@
   --aq-border-hover: rgba(255, 255, 255, 0.1);
   --aq-border-active: rgba(230, 255, 0, 0.4);
 
-  /* Spacing & Radii */
-  --aq-radius: 16px;
-  --aq-radius-sm: 10px;
-  --aq-radius-xs: 6px;
+  /* Shadow */
   --aq-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
-  --aq-transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Light Mode */
+body.light-mode {
+  /* Core Palette - Light */
+  --aq-void: #FFFFFF;
+  --aq-surface: #FFFFFF;
+  --aq-elevated: #F8F9FA;
+  --aq-subtle: #F1F5F9;
+
+  /* Blue stays similar */
+  --aq-blue: #5BA4D9;
+  --aq-blue-hover: #4A93C8;
+  --aq-blue-link: #4A93C8;
+  --aq-blue-dim: rgba(91, 164, 217, 0.08);
+  --aq-blue-glow: rgba(91, 164, 217, 0.15);
+  --aq-blue-bright: rgba(91, 164, 217, 0.25);
+
+  /* Navy adjusted */
+  --aq-navy: #1E3A5F;
+  --aq-navy-dim: rgba(30, 58, 95, 0.08);
+
+  /* Text Hierarchy - Inverted */
+  --aq-text-primary: #1a1a1a;
+  --aq-text-secondary: #64748b;
+  --aq-text-muted: #94a3b8;
+
+  /* Feedback */
+  --aq-success: #10b981;
+  --aq-warning: #f59e0b;
+  --aq-danger: #ef4444;
+
+  /* Borders & Lines - Light */
+  --aq-border: #E2E8F0;
+  --aq-border-hover: #CBD5E1;
+  --aq-border-active: rgba(91, 164, 217, 0.4);
+
+  /* Shadow */
+  --aq-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
 }
 
 body {
@@ -148,6 +193,31 @@ body {
 .aq-save-indicator svg {
   width: 16px;
   height: 16px;
+}
+
+.aq-theme-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: var(--aq-elevated);
+  border: 1px solid var(--aq-border);
+  border-radius: var(--aq-radius-sm);
+  color: var(--aq-text-secondary);
+  cursor: pointer;
+  transition: var(--aq-transition);
+}
+
+.aq-theme-toggle-btn:hover {
+  background: var(--aq-subtle);
+  border-color: var(--aq-border-hover);
+  color: var(--aq-text-primary);
+}
+
+.aq-theme-toggle-btn svg {
+  width: 20px;
+  height: 20px;
 }
 
 /* ─────────────────────────────────────────────────────────────────
@@ -396,6 +466,17 @@ body {
   font-size: 12px;
   color: var(--aq-text-muted);
   margin-top: 8px;
+}
+
+.aq-help-text a {
+  color: var(--aq-blue-link);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.aq-help-text a:hover {
+  color: var(--aq-blue);
+  text-decoration: underline;
 }
 
 /* ─────────────────────────────────────────────────────────────────
