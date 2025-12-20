@@ -335,6 +335,43 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────
+   Response Length Selector
+   ───────────────────────────────────────────────────────────────── */
+.aq-length-group {
+  gap: 12px !important;
+}
+
+.aq-length-options {
+  display: flex !important;
+  gap: 8px !important;
+}
+
+.aq-length-btn {
+  flex: 1 !important;
+  padding: 10px 16px !important;
+  background: var(--aq-surface) !important;
+  border: 1px solid var(--aq-border) !important;
+  border-radius: var(--aq-radius-sm) !important;
+  color: var(--aq-text-secondary) !important;
+  font-family: var(--aq-font-body) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: all 0.2s var(--aq-ease) !important;
+}
+
+.aq-length-btn:hover {
+  border-color: var(--aq-blue) !important;
+  color: var(--aq-text-primary) !important;
+}
+
+.aq-length-btn--active {
+  background: var(--aq-blue-light) !important;
+  border-color: var(--aq-blue) !important;
+  color: var(--aq-blue) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────
    Submit Button
    ───────────────────────────────────────────────────────────────── */
 .aq-submit-btn {

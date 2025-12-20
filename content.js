@@ -18,7 +18,8 @@
     additionalContext: '',
     response: '',
     error: null,
-    hasApiKey: false
+    hasApiKey: false,
+    responseLength: 'concise'  // concise | medium | detailed
   };
 
   // ─────────────────────────────────────────────────────────────
@@ -98,6 +99,15 @@
               id="aq-context"
               placeholder="Paste a job description or relevant details..."
             ></textarea>
+          </div>
+
+          <div class="aq-input-group aq-length-group">
+            <label class="aq-input-label">Response Length</label>
+            <div class="aq-length-options" id="aq-length-options">
+              <button class="aq-length-btn aq-length-btn--active" data-length="concise">Concise</button>
+              <button class="aq-length-btn" data-length="medium">Medium</button>
+              <button class="aq-length-btn" data-length="detailed">Detailed</button>
+            </div>
           </div>
 
           <button class="aq-submit-btn" id="aq-submit-btn">
@@ -182,11 +192,26 @@
     const contextInput = root.querySelector('#aq-context');
     const copyBtn = root.querySelector('#aq-copy-btn');
     const settingsBtn = root.querySelector('#aq-settings-btn');
+    const lengthOptions = root.querySelector('#aq-length-options');
 
     toggleBtn.addEventListener('click', () => togglePanel(panel, toggleBtn));
     closeBtn.addEventListener('click', () => togglePanel(panel, toggleBtn));
     submitBtn.addEventListener('click', handleSubmit);
     copyBtn.addEventListener('click', copyResponse);
+
+    // Length option toggle
+    lengthOptions.addEventListener('click', (e) => {
+      const btn = e.target.closest('.aq-length-btn');
+      if (!btn) return;
+      
+      // Update active state
+      lengthOptions.querySelectorAll('.aq-length-btn').forEach(b => 
+        b.classList.remove('aq-length-btn--active'));
+      btn.classList.add('aq-length-btn--active');
+      
+      // Store selection
+      state.responseLength = btn.dataset.length;
+    });
 
     settingsBtn.addEventListener('click', (e) => {
       e.preventDefault();
@@ -243,14 +268,26 @@
       const response = await chrome.runtime.sendMessage({
         type: 'ASK_AI',
         question: state.question.trim(),
-        additionalContext: state.additionalContext.trim()
+        additionalContext: state.additionalContext.trim(),
+        responseLength: state.responseLength
       });
 
       if (response.error) {
         state.error = response.error;
         state.response = '';
       } else {
-        state.response = response.answer || 'No response received.';
+        // Parse JSON response if available
+        let answer = response.answer || 'No response received.';
+        try {
+          // Try to parse as JSON
+          const parsed = JSON.parse(answer);
+          if (parsed.response) {
+            answer = parsed.response;
+          }
+        } catch (e) {
+          // Not JSON, use as-is
+        }
+        state.response = answer;
         state.error = null;
       }
     } catch (err) {

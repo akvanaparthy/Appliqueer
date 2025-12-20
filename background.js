@@ -47,7 +47,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 async function handleMessage(request, sender) {
   switch (request.type) {
     case 'ASK_AI':
-      return await handleAskAI(request.question, request.additionalContext);
+      return await handleAskAI(request.question, request.additionalContext, request.responseLength);
     
     case 'CHECK_STATUS':
       return await checkStatus();
@@ -85,7 +85,7 @@ async function checkStatus() {
 }
 
 // Handle AI question
-async function handleAskAI(question, additionalContext) {
+async function handleAskAI(question, additionalContext, responseLength = 'concise') {
   try {
     // Load configuration
     const config = await chrome.storage.local.get([
@@ -108,7 +108,7 @@ async function handleAskAI(question, additionalContext) {
     }
 
     // Build prompt
-    const prompt = buildPrompt(question, additionalContext, resume, additionalFiles);
+    const prompt = buildPrompt(question, additionalContext, resume, additionalFiles, responseLength);
 
     // Call appropriate API
     let answer;
@@ -135,7 +135,7 @@ async function handleAskAI(question, additionalContext) {
 }
 
 // Build the prompt with context
-function buildPrompt(question, additionalContext, resume, additionalFiles) {
+function buildPrompt(question, additionalContext, resume, additionalFiles, responseLength = 'concise') {
   let context = '';
 
   // Add resume if available
@@ -158,8 +158,20 @@ function buildPrompt(question, additionalContext, resume, additionalFiles) {
     context += `## Additional Context Provided:\n${additionalContext.trim()}\n\n`;
   }
 
-  // Build final prompt
-  const systemPrompt = `Answer this as my POV based on my resume, dont include any fake or false information, only respond according to my resume and other additional files provided, only paragraphs, dont include long dashes or any other style
+  // Response length guidance
+  const lengthGuidance = {
+    concise: '2-3 short paragraphs, straight to the point',
+    medium: '4-5 paragraphs with reasonable detail',
+    detailed: 'comprehensive response with full details, examples if relevant'
+  };
+
+  // Build final prompt with JSON response format
+  const systemPrompt = `Answer this as my POV based on my resume. Don't include any fake or false information - only respond according to my resume and other additional files provided.
+
+Response length: ${lengthGuidance[responseLength] || lengthGuidance.concise}
+
+IMPORTANT: Return your response as a JSON object with this exact structure:
+{"response": "your answer here with \\n for new paragraphs"}
 
 ${context ? 'Here is the context about the user:\n\n' + context : 'Note: The user has not provided their resume yet. Encourage them to add it in settings for personalized responses.'}`;
 
