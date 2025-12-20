@@ -832,6 +832,85 @@
   height: 18px !important;
 }
 
+/* Pin Toggle (Auto-close control) */
+.aq-pin-toggle {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 36px !important;
+  height: 36px !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: var(--aq-radius-sm) !important;
+  color: var(--aq-text-secondary) !important;
+  cursor: pointer !important;
+  transition: all 0.2s var(--aq-ease) !important;
+  padding: 0 !important;
+}
+
+.aq-pin-toggle:hover {
+  background: var(--aq-surface-hover) !important;
+  color: var(--aq-text-primary) !important;
+}
+
+.aq-pin-toggle--active {
+  background: var(--aq-blue-light) !important;
+  color: var(--aq-blue) !important;
+}
+
+.aq-pin-toggle--active:hover {
+  background: var(--aq-blue-light) !important;
+  color: var(--aq-blue) !important;
+}
+
+.aq-pin-toggle svg {
+  width: 18px !important;
+  height: 18px !important;
+}
+
+/* External Close Button */
+.aq-external-close {
+  display: none !important;
+  position: fixed !important;
+  right: var(--aq-panel-width) !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 20px !important;
+  height: 48px !important;
+  background: var(--aq-surface) !important;
+  border: 1px solid var(--aq-border) !important;
+  border-right: none !important;
+  border-radius: 8px 0 0 8px !important;
+  color: var(--aq-text-muted) !important;
+  cursor: pointer !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.2s var(--aq-ease) !important;
+  padding: 0 !important;
+  z-index: 2147483646 !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Only show external close when panel is open AND pinned */
+#appliqueer-root.aq-pinned .aq-panel--open ~ .aq-external-close {
+  display: flex !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+.aq-external-close:hover {
+  background: var(--aq-surface-hover) !important;
+  color: var(--aq-text-primary) !important;
+  width: 24px !important;
+  right: calc(var(--aq-panel-width) + 4px) !important;
+}
+
+.aq-external-close svg {
+  width: 16px !important;
+  height: 16px !important;
+}
+
 .aq-status {
   display: flex !important;
   align-items: center !important;

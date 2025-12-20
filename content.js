@@ -21,7 +21,8 @@
     error: null,
     hasApiKey: false,
     responseLength: 'concise',  // concise | medium | detailed
-    isDarkMode: false
+    isDarkMode: false,
+    autoClose: true  // Auto-close on click outside
   };
 
   // ─────────────────────────────────────────────────────────────
@@ -88,6 +89,15 @@
 
     minus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <line x1="5" y1="12" x2="19" y2="12"/>
+    </svg>`,
+
+    chevronRight: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="9 18 15 12 9 6"/>
+    </svg>`,
+
+    pin: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="12" y1="17" x2="12" y2="22"/>
+      <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/>
     </svg>`
   };
 
@@ -192,6 +202,9 @@
             <button class="aq-theme-toggle" id="aq-theme-toggle" aria-label="Toggle dark mode">
               ${icons.moon}
             </button>
+            <button class="aq-pin-toggle" id="aq-pin-toggle" aria-label="Toggle pin panel">
+              ${icons.pin}
+            </button>
           </div>
           <div class="aq-status">
             <span class="aq-status-dot" id="aq-status-dot"></span>
@@ -199,6 +212,11 @@
           </div>
         </footer>
       </div>
+      
+      <!-- External close button (visible when pinned/auto-close disabled) -->
+      <button class="aq-external-close" id="aq-external-close" aria-label="Close panel">
+        ${icons.chevronRight}
+      </button>
     `;
     document.body.appendChild(root);
     return root;
@@ -212,6 +230,7 @@
     bindEvents(root);
     checkApiKeyStatus();
     loadDarkModePreference();
+    loadAutoClosePreference();
   }
 
   async function checkApiKeyStatus() {
@@ -268,6 +287,45 @@
       await chrome.storage.local.set({ darkMode: state.isDarkMode });
     } catch (err) {
       console.error('Appliqueer: Failed to save dark mode preference', err);
+    }
+  }
+
+  async function loadAutoClosePreference() {
+    try {
+      const result = await chrome.storage.local.get(['autoClose']);
+      state.autoClose = result.autoClose !== undefined ? result.autoClose : true;
+      applyAutoClose();
+    } catch (err) {
+      console.error('Appliqueer: Failed to load auto-close preference', err);
+    }
+  }
+
+  function applyAutoClose() {
+    const root = document.getElementById('appliqueer-root');
+    const pinToggle = document.getElementById('aq-pin-toggle');
+    const externalClose = document.getElementById('aq-external-close');
+
+    if (state.autoClose) {
+      // Auto-close enabled: hide external button, remove pinned class
+      root.classList.remove('aq-pinned');
+      if (pinToggle) pinToggle.classList.remove('aq-pin-toggle--active');
+      if (externalClose) externalClose.style.display = 'none';
+    } else {
+      // Auto-close disabled (pinned): show external button
+      root.classList.add('aq-pinned');
+      if (pinToggle) pinToggle.classList.add('aq-pin-toggle--active');
+      if (externalClose) externalClose.style.display = 'flex';
+    }
+  }
+
+  async function toggleAutoClose() {
+    state.autoClose = !state.autoClose;
+    applyAutoClose();
+
+    try {
+      await chrome.storage.local.set({ autoClose: state.autoClose });
+    } catch (err) {
+      console.error('Appliqueer: Failed to save auto-close preference', err);
     }
   }
 
@@ -347,12 +405,26 @@
       toggleDarkMode();
     });
 
+    // Pin toggle (auto-close control)
+    const pinToggle = root.querySelector('#aq-pin-toggle');
+    pinToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleAutoClose();
+    });
+
+    // External close button
+    const externalClose = root.querySelector('#aq-external-close');
+    externalClose.addEventListener('click', (e) => {
+      e.stopPropagation();
+      togglePanel(panel, toggleBtn);
+    });
+
     jobDescInput.addEventListener('input', (e) => state.jobDescription = e.target.value);
     contextInput.addEventListener('input', (e) => state.additionalContext = e.target.value);
 
-    // Click outside to close
+    // Click outside to close (only if autoClose is enabled)
     document.addEventListener('click', (e) => {
-      if (state.isExpanded && !panel.contains(e.target) && !toggleBtn.contains(e.target)) {
+      if (state.isExpanded && state.autoClose && !panel.contains(e.target) && !toggleBtn.contains(e.target)) {
         togglePanel(panel, toggleBtn);
       }
     });
