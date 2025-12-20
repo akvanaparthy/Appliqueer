@@ -407,14 +407,11 @@ function updateApiKeyHelp() {
 // Handle resume file
 async function handleResumeFile(file) {
   try {
-    console.log('Appliqueer: Reading resume file:', file.name);
-    
     // Show loading state
     elements.resumeDropzone.style.opacity = '0.5';
     elements.resumeDropzone.style.pointerEvents = 'none';
-    
+
     const content = await readFileContent(file);
-    console.log('Appliqueer: Resume content length:', content.length);
     
     // Store both content and file metadata
     settings.resume = content;
@@ -559,10 +556,9 @@ function loadPDFJS() {
       reject(new Error('PDF.js library not loaded'));
       return;
     }
-    
+
     // Set worker source to local file
     window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'lib/pdf.worker.min.js';
-    console.log('Appliqueer: PDF.js worker initialized');
     resolve();
   });
 }
@@ -635,14 +631,6 @@ async function saveSettings() {
     elements.saveBtn.disabled = true;
     elements.saveBtn.textContent = 'Saving...';
 
-    console.log('Appliqueer: Saving settings...', {
-      hasApiKey: !!settings.apiKey,
-      provider: settings.provider,
-      resumeLength: settings.resume ? settings.resume.length : 0,
-      additionalFilesCount: settings.additionalFiles.length,
-      model: settings.general.model
-    });
-
     const response = await chrome.runtime.sendMessage({
       type: 'SAVE_SETTINGS',
       settings: settings
@@ -652,7 +640,6 @@ async function saveSettings() {
       throw new Error(response.error);
     }
 
-    console.log('Appliqueer: Settings saved successfully');
     hasUnsavedChanges = false;
     showSaveIndicator();
 

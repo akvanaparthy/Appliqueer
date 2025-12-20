@@ -345,7 +345,6 @@ async function fetchModels(apiKey, provider) {
     const cachedData = cached[cacheKey];
     
     if (cachedData && (Date.now() - cachedData.timestamp) < MODEL_CACHE_DURATION) {
-      console.log('Appliqueer: Using cached models for', provider);
       return { models: cachedData.models };
     }
 
@@ -486,6 +485,3 @@ function formatModelName(id) {
 
 // No fallback models - we want errors to be clear
 // Removed getFallbackModels function to make API validation explicit
-
-// Log extension startup
-console.log('Appliqueer: Background service worker initialized');
