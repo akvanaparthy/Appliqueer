@@ -521,42 +521,40 @@
   -webkit-box-orient: vertical !important;
 }
 
-/* Response Cards */
-.aq-response-card {
-  background: var(--aq-surface) !important;
-  border: 1px solid var(--aq-border) !important;
-  border-radius: var(--aq-radius-md) !important;
-  overflow: hidden !important;
-  margin-bottom: 16px !important;
+/* Response Items */
+.aq-response-item {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
 }
 
-.aq-response-card:last-child {
-  margin-bottom: 0 !important;
-}
-
-.aq-response-card-header {
+.aq-response-header {
   display: flex !important;
   align-items: flex-start !important;
   justify-content: space-between !important;
   gap: 12px !important;
-  padding: 12px 16px !important;
-  background: var(--aq-bg) !important;
-  border-bottom: 1px solid var(--aq-border) !important;
 }
 
-.aq-response-card-body {
-  padding: 16px !important;
+.aq-response-body {
   font-size: 14px !important;
   line-height: 1.7 !important;
   color: var(--aq-text-primary) !important;
+  padding-left: 38px !important; /* Align with text in question header */
 }
 
-.aq-response-card-body p {
+.aq-response-body p {
   margin: 0 !important;
 }
 
-.aq-response-card-body p + p {
+.aq-response-body p + p {
   margin-top: 12px !important;
+}
+
+/* Divider */
+.aq-response-divider {
+  height: 1px !important;
+  background: var(--aq-border) !important;
+  margin: 24px 0 !important;
 }
 
 /* Single Copy Button */

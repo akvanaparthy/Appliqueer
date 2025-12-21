@@ -560,8 +560,8 @@
       copyBtn.style.display = 'none';
     } else if (state.responses.length > 0) {
       responseContent.innerHTML = state.responses.map((r, i) => `
-        <div class="aq-response-card" data-response-index="${i}">
-          <div class="aq-response-card-header">
+        <div class="aq-response-item" data-response-index="${i}">
+          <div class="aq-response-header">
             <div class="aq-response-question">
               <span class="aq-response-number">Q${i + 1}</span>
               <span class="aq-response-question-text">${escapeHtml(r.question)}</span>
@@ -570,11 +570,11 @@
               ${icons.copy}
             </button>
           </div>
-          <div class="aq-response-card-body">
+          <div class="aq-response-body">
             ${formatResponse(r.answer)}
           </div>
         </div>
-      `).join('');
+      `).join('<div class="aq-response-divider"></div>');
       copyBtn.style.display = 'flex';
       copyBtn.querySelector('span').textContent = 'Copy All';
       
