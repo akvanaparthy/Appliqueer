@@ -491,7 +491,6 @@
     const addQuestionBtn = root.querySelector('#aq-add-question');
     const jobDescInput = root.querySelector('#aq-job-description');
     const contextInput = root.querySelector('#aq-context');
-    const copyBtn = root.querySelector('#aq-copy-btn');
     const settingsBtn = root.querySelector('#aq-settings-btn');
     const themeToggle = root.querySelector('#aq-theme-toggle');
     const lengthOptions = root.querySelector('#aq-length-options');
@@ -513,7 +512,6 @@
       e.stopPropagation();
       handleSubmit();
     });
-    copyBtn.addEventListener('click', copyAllResponses);
 
     // Add question button
     addQuestionBtn.addEventListener('click', (e) => {
