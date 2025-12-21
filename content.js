@@ -197,21 +197,7 @@
             ${icons.send}
           </button>
 
-          <div class="aq-response">
-            <div class="aq-response-header">
-              <span class="aq-label">Response</span>
-              <button class="aq-copy-btn" id="aq-copy-btn" style="display: none;">
-                ${icons.copy}
-                <span>Copy</span>
-              </button>
-            </div>
-            <div class="aq-response-content" id="aq-response-content">
-              <div class="aq-response-placeholder">
-                ${icons.sparkle}
-                <span>Your answer will appear here</span>
-              </div>
-            </div>
-          </div>
+          <div id="aq-responses-container"></div>
         </div>
 
         <footer class="aq-footer">
@@ -402,12 +388,12 @@
     dragState.startRight = window.innerWidth - rect.right;
     dragState.hasMoved = false;
 
-    // Start long press timer (300ms)
+    // Start long press timer (150ms)
     dragState.longPressTimer = setTimeout(() => {
       dragState.isDragging = true;
       toggleBtn.classList.add('aq-floating-btn--dragging');
       document.body.style.userSelect = 'none';
-    }, 300);
+    }, 150);
   }
 
   function onDrag(e, toggleBtn) {
@@ -723,8 +709,7 @@
 
   function updateUI() {
     const submitBtn = document.getElementById('aq-submit-btn');
-    const responseContent = document.getElementById('aq-response-content');
-    const copyBtn = document.getElementById('aq-copy-btn');
+    const responsesContainer = document.getElementById('aq-responses-container');
 
     if (state.isLoading) {
       submitBtn.disabled = true;
@@ -735,11 +720,15 @@
     }
 
     if (state.error) {
-      responseContent.innerHTML = `<div class="aq-error">${escapeHtml(state.error)}</div>`;
-      copyBtn.style.display = 'none';
+      responsesContainer.innerHTML = `
+        <div class="aq-card">
+          <div class="aq-error">${escapeHtml(state.error)}</div>
+        </div>
+      `;
     } else if (state.responses.length > 0) {
-      responseContent.innerHTML = state.responses.map((r, i) => `
-        <div class="aq-response-item" data-response-index="${i}">
+      // Render each response as its own card
+      responsesContainer.innerHTML = state.responses.map((r, i) => `
+        <div class="aq-card aq-response-card">
           <div class="aq-response-header">
             <div class="aq-response-question">
               <span class="aq-response-number">Q${i + 1}</span>
@@ -753,12 +742,10 @@
             ${formatResponse(r.answer)}
           </div>
         </div>
-      `).join('<div class="aq-response-divider"></div>');
-      copyBtn.style.display = 'flex';
-      copyBtn.querySelector('span').textContent = 'Copy All';
-      
+      `).join('');
+
       // Bind copy buttons for individual responses
-      responseContent.querySelectorAll('.aq-copy-single-btn').forEach(btn => {
+      responsesContainer.querySelectorAll('.aq-copy-single-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
           e.stopPropagation();
           const index = parseInt(btn.dataset.index);
@@ -766,13 +753,7 @@
         });
       });
     } else if (!state.isLoading) {
-      responseContent.innerHTML = `
-        <div class="aq-response-placeholder">
-          ${icons.sparkle}
-          <span>Your answers will appear here</span>
-        </div>
-      `;
-      copyBtn.style.display = 'none';
+      responsesContainer.innerHTML = '';
     }
   }
 

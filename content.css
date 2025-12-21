@@ -316,23 +316,6 @@
   background: var(--aq-text-muted) !important;
 }
 
-.aq-response-content::-webkit-scrollbar {
-  width: 4px !important;
-}
-
-.aq-response-content::-webkit-scrollbar-track {
-  background: transparent !important;
-}
-
-.aq-response-content::-webkit-scrollbar-thumb {
-  background: var(--aq-border-hover) !important;
-  border-radius: 2px !important;
-}
-
-.aq-response-content::-webkit-scrollbar-thumb:hover {
-  background: var(--aq-text-muted) !important;
-}
-
 /* ─────────────────────────────────────────────────────────────────
    Card Component
    ───────────────────────────────────────────────────────────────── */
@@ -553,41 +536,6 @@
   -webkit-box-orient: vertical !important;
 }
 
-/* Response Items */
-.aq-response-item {
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 8px !important;
-}
-
-.aq-response-header {
-  display: flex !important;
-  align-items: flex-start !important;
-  justify-content: space-between !important;
-  gap: 12px !important;
-}
-
-.aq-response-body {
-  font-size: 14px !important;
-  line-height: 1.7 !important;
-  color: var(--aq-text-primary) !important;
-  padding-left: 38px !important; /* Align with text in question header */
-}
-
-.aq-response-body p {
-  margin: 0 !important;
-}
-
-.aq-response-body p + p {
-  margin-top: 12px !important;
-}
-
-/* Divider */
-.aq-response-divider {
-  height: 1px !important;
-  background: var(--aq-border) !important;
-  margin: 24px 0 !important;
-}
 
 /* Single Copy Button */
 .aq-copy-single-btn {
@@ -709,88 +657,48 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────
-   Response Area
+   Response Cards
    ───────────────────────────────────────────────────────────────── */
-.aq-response {
-  flex: 1 !important;
+#aq-responses-container {
   display: flex !important;
   flex-direction: column !important;
   gap: 16px !important;
-  min-height: 240px !important;
+}
+
+.aq-response-card {
+  padding: 20px !important;
 }
 
 .aq-response-header {
   display: flex !important;
   justify-content: space-between !important;
-  align-items: center !important;
-  padding: 0 4px !important;
+  align-items: flex-start !important;
+  margin-bottom: 16px !important;
+  gap: 12px !important;
 }
 
-.aq-label {
-  font-size: 14px !important;
-  font-weight: 600 !important;
-  color: var(--aq-text-primary) !important;
-}
-
-.aq-copy-btn {
-  display: flex !important;
-  align-items: center !important;
-  gap: 8px !important;
-  padding: 8px 14px !important;
-  background: transparent !important;
-  border: 1px solid var(--aq-border) !important;
-  border-radius: var(--aq-radius-sm) !important;
-  color: var(--aq-text-secondary) !important;
-  font-family: var(--aq-font-body) !important;
-  font-size: 13px !important;
-  font-weight: 500 !important;
-  cursor: pointer !important;
-  transition: all 0.2s var(--aq-ease) !important;
-}
-
-.aq-copy-btn:hover {
-  background: var(--aq-surface-hover) !important;
-  border-color: var(--aq-border-hover) !important;
-  color: var(--aq-text-primary) !important;
-}
-
-.aq-copy-btn svg {
-  width: 15px !important;
-  height: 15px !important;
-}
-
-.aq-response-content {
-  flex: 1 !important;
-  background: var(--aq-surface) !important;
-  border: 1px solid var(--aq-border) !important;
-  border-radius: var(--aq-radius-md) !important;
-  padding: 20px !important;
-  overflow-y: auto !important;
-  box-shadow: var(--aq-shadow-sm) !important;
-}
-
-.aq-response-content p {
+.aq-response-body p {
   color: var(--aq-text-primary) !important;
   font-size: 15px !important;
   line-height: 1.75 !important;
   margin-bottom: var(--aq-space-md) !important;
 }
 
-.aq-response-content p:last-child {
+.aq-response-body p:last-child {
   margin-bottom: 0 !important;
 }
 
-.aq-response-content strong {
+.aq-response-body strong {
   color: var(--aq-navy) !important;
   font-weight: 600 !important;
 }
 
-.aq-response-content em {
+.aq-response-body em {
   color: var(--aq-text-primary) !important;
   font-style: italic !important;
 }
 
-.aq-response-content code {
+.aq-response-body code {
   font-family: 'SF Mono', 'Fira Code', monospace !important;
   font-size: 14px !important;
   background: var(--aq-blue-light) !important;
@@ -799,7 +707,7 @@
   border-radius: 4px !important;
 }
 
-.aq-response-content pre {
+.aq-response-body pre {
   background: var(--aq-bg) !important;
   border: 1px solid var(--aq-border) !important;
   border-radius: var(--aq-radius-sm) !important;
@@ -808,35 +716,10 @@
   overflow-x: auto !important;
 }
 
-.aq-response-content pre code {
+.aq-response-body pre code {
   background: none !important;
   padding: 0 !important;
   color: var(--aq-text-primary) !important;
-}
-
-/* Placeholder State */
-.aq-response-placeholder {
-  height: 100% !important;
-  min-height: 180px !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: var(--aq-space-md) !important;
-  color: var(--aq-text-muted) !important;
-  text-align: center !important;
-}
-
-.aq-response-placeholder svg {
-  width: 36px !important;
-  height: 36px !important;
-  opacity: 0.4 !important;
-  stroke: var(--aq-blue) !important;
-}
-
-.aq-response-placeholder span {
-  font-size: 14px !important;
-  font-weight: 400 !important;
 }
 
 /* Error State */
@@ -848,6 +731,11 @@
   color: var(--aq-error) !important;
   font-size: 14px !important;
   line-height: 1.6 !important;
+}
+
+#appliqueer-root.aq-dark-mode .aq-error {
+  background: rgba(239, 68, 68, 0.1) !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
 }
 
 /* ─────────────────────────────────────────────────────────────────
@@ -1157,11 +1045,6 @@
   .aq-submit-btn {
     height: 52px !important;
     font-size: 15px !important;
-  }
-
-  .aq-response-content {
-    padding: 16px !important;
-    font-size: 14px !important;
   }
 
   .aq-footer {
