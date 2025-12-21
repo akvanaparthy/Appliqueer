@@ -239,6 +239,10 @@
       state.hasApiKey = response?.hasApiKey || false;
       updateStatusIndicator();
     } catch (err) {
+      if (err.message?.includes('Extension context invalidated')) {
+        console.warn('Appliqueer: Extension was reloaded. Please refresh this page.');
+        return;
+      }
       console.error('Appliqueer: Status check failed', err);
     }
   }
@@ -534,7 +538,11 @@
         state.error = null;
       }
     } catch (err) {
-      state.error = 'Failed to get response. Please try again.';
+      if (err.message?.includes('Extension context invalidated')) {
+        state.error = 'Extension was reloaded. Please refresh this page to continue.';
+      } else {
+        state.error = 'Failed to get response. Please try again.';
+      }
       state.responses = [];
     } finally {
       state.isLoading = false;
