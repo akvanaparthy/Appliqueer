@@ -141,6 +141,38 @@
   transform: translateY(-2px) !important;
 }
 
+.aq-floating-btn--dragging {
+  cursor: grabbing !important;
+  transition: none !important;
+  transform: scale(1.05) !important;
+  box-shadow: 0 20px 48px rgba(91, 164, 217, 0.4) !important;
+}
+
+.aq-move-icon {
+  position: absolute !important;
+  top: -8px !important;
+  right: -8px !important;
+  width: 24px !important;
+  height: 24px !important;
+  background: var(--aq-blue) !important;
+  border: 2px solid var(--aq-surface) !important;
+  border-radius: 50% !important;
+  display: none !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: var(--aq-shadow-md) !important;
+}
+
+.aq-floating-btn:hover .aq-move-icon {
+  display: flex !important;
+}
+
+.aq-move-icon svg {
+  width: 14px !important;
+  height: 14px !important;
+  stroke: white !important;
+}
+
 .aq-btn-icon-wrapper {
   display: flex !important;
   align-items: center !important;

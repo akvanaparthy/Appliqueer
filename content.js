@@ -25,6 +25,17 @@
     autoClose: true  // Auto-close on click outside
   };
 
+  // Drag state
+  const dragState = {
+    isDragging: false,
+    startX: 0,
+    startY: 0,
+    startTop: 0,
+    startRight: 0,
+    longPressTimer: null,
+    hasMoved: false
+  };
+
   // ─────────────────────────────────────────────────────────────
   // Icons — Using the Appliqueer brand logo
   // ─────────────────────────────────────────────────────────────
@@ -98,6 +109,15 @@
     pin: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <line x1="12" y1="17" x2="12" y2="22"/>
       <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/>
+    </svg>`,
+
+    move: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="5 9 2 12 5 15"/>
+      <polyline points="9 5 12 2 15 5"/>
+      <polyline points="15 19 12 22 9 19"/>
+      <polyline points="19 9 22 12 19 15"/>
+      <line x1="2" y1="12" x2="22" y2="12"/>
+      <line x1="12" y1="2" x2="12" y2="22"/>
     </svg>`
   };
 
@@ -112,6 +132,7 @@
         <div class="aq-btn-icon-wrapper">
           <span class="aq-btn-icon">${icons.logo}</span>
         </div>
+        <span class="aq-move-icon">${icons.move}</span>
       </button>
       <div class="aq-shortcut-hint"></div>
 
@@ -231,6 +252,7 @@
     checkApiKeyStatus();
     loadDarkModePreference();
     loadAutoClosePreference();
+    loadButtonPosition();
   }
 
   async function checkApiKeyStatus() {
@@ -334,6 +356,144 @@
   }
 
   // ─────────────────────────────────────────────────────────────
+  // Button Position & Dragging
+  // ─────────────────────────────────────────────────────────────
+  async function loadButtonPosition() {
+    try {
+      const result = await chrome.storage.local.get(['buttonPosition']);
+      if (result.buttonPosition) {
+        const toggleBtn = document.getElementById('aq-toggle-btn');
+        if (toggleBtn) {
+          // Only set position if it's on the right half
+          if (result.buttonPosition.right !== undefined) {
+            toggleBtn.style.top = result.buttonPosition.top;
+            toggleBtn.style.right = result.buttonPosition.right;
+            toggleBtn.style.bottom = 'auto';
+          }
+        }
+      }
+    } catch (err) {
+      console.error('Appliqueer: Failed to load button position', err);
+    }
+  }
+
+  async function saveButtonPosition(top, right) {
+    try {
+      await chrome.storage.local.set({
+        buttonPosition: { top, right }
+      });
+    } catch (err) {
+      console.error('Appliqueer: Failed to save button position', err);
+    }
+  }
+
+  function startDrag(e, toggleBtn) {
+    // Prevent default to avoid text selection
+    e.preventDefault();
+
+    const touch = e.type.includes('touch') ? e.touches[0] : e;
+
+    // Get current position
+    const rect = toggleBtn.getBoundingClientRect();
+
+    dragState.startX = touch.clientX;
+    dragState.startY = touch.clientY;
+    dragState.startTop = rect.top;
+    dragState.startRight = window.innerWidth - rect.right;
+    dragState.hasMoved = false;
+
+    // Start long press timer (300ms)
+    dragState.longPressTimer = setTimeout(() => {
+      dragState.isDragging = true;
+      toggleBtn.classList.add('aq-floating-btn--dragging');
+      document.body.style.userSelect = 'none';
+    }, 300);
+  }
+
+  function onDrag(e, toggleBtn) {
+    if (!dragState.isDragging && dragState.longPressTimer) {
+      const touch = e.type.includes('touch') ? e.touches[0] : e;
+      const moved = Math.abs(touch.clientX - dragState.startX) > 5 ||
+                    Math.abs(touch.clientY - dragState.startY) > 5;
+
+      // If moved before long press completes, cancel the long press
+      if (moved) {
+        clearTimeout(dragState.longPressTimer);
+        dragState.longPressTimer = null;
+      }
+    }
+
+    if (!dragState.isDragging) return;
+
+    e.preventDefault();
+    dragState.hasMoved = true;
+
+    const touch = e.type.includes('touch') ? e.touches[0] : e;
+
+    // Calculate new position
+    const deltaX = touch.clientX - dragState.startX;
+    const deltaY = touch.clientY - dragState.startY;
+
+    let newTop = dragState.startTop + deltaY;
+    let newRight = dragState.startRight - deltaX;
+
+    // Constrain to right side of screen (right half)
+    const btnRect = toggleBtn.getBoundingClientRect();
+    const minRight = 16; // Minimum distance from right edge
+    const maxRight = window.innerWidth / 2 - btnRect.width; // Keep on right side
+    const minTop = 16; // Minimum distance from top
+    const maxTop = window.innerHeight - btnRect.height - 16; // Maximum distance from top
+
+    newRight = Math.max(minRight, Math.min(maxRight, newRight));
+    newTop = Math.max(minTop, Math.min(maxTop, newTop));
+
+    // Apply position
+    toggleBtn.style.top = `${newTop}px`;
+    toggleBtn.style.right = `${newRight}px`;
+    toggleBtn.style.bottom = 'auto';
+  }
+
+  function endDrag(e, toggleBtn) {
+    if (dragState.longPressTimer) {
+      clearTimeout(dragState.longPressTimer);
+      dragState.longPressTimer = null;
+    }
+
+    if (dragState.isDragging) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      dragState.isDragging = false;
+      toggleBtn.classList.remove('aq-floating-btn--dragging');
+      document.body.style.userSelect = '';
+
+      // Save position
+      const currentTop = toggleBtn.style.top;
+      const currentRight = toggleBtn.style.right;
+      saveButtonPosition(currentTop, currentRight);
+
+      // If we dragged, prevent the click event
+      if (dragState.hasMoved) {
+        setTimeout(() => {
+          dragState.hasMoved = false;
+        }, 10);
+      }
+    }
+  }
+
+  function setupDragging(toggleBtn) {
+    // Mouse events
+    toggleBtn.addEventListener('mousedown', (e) => startDrag(e, toggleBtn));
+    document.addEventListener('mousemove', (e) => onDrag(e, toggleBtn));
+    document.addEventListener('mouseup', (e) => endDrag(e, toggleBtn));
+
+    // Touch events
+    toggleBtn.addEventListener('touchstart', (e) => startDrag(e, toggleBtn), { passive: false });
+    document.addEventListener('touchmove', (e) => onDrag(e, toggleBtn), { passive: false });
+    document.addEventListener('touchend', (e) => endDrag(e, toggleBtn));
+  }
+
+  // ─────────────────────────────────────────────────────────────
   // Event Handlers
   // ─────────────────────────────────────────────────────────────
   function bindEvents(root) {
@@ -350,7 +510,18 @@
     const themeToggle = root.querySelector('#aq-theme-toggle');
     const lengthOptions = root.querySelector('#aq-length-options');
 
-    toggleBtn.addEventListener('click', () => togglePanel(panel, toggleBtn));
+    // Setup dragging
+    setupDragging(toggleBtn);
+
+    toggleBtn.addEventListener('click', (e) => {
+      // Don't toggle if we just finished dragging
+      if (dragState.hasMoved) {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+      togglePanel(panel, toggleBtn);
+    });
     closeBtn.addEventListener('click', () => togglePanel(panel, toggleBtn));
     submitBtn.addEventListener('click', (e) => {
       e.stopPropagation();
