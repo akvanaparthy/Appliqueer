@@ -131,17 +131,25 @@ async function handleAskAI(questions, jobDescription, additionalContext, respons
 
     // Parse the JSON response with multiple answers
     try {
-      const parsed = JSON.parse(rawAnswer);
+      // Strip markdown code blocks if present (```json ... ``` or ``` ... ```)
+      let cleanedAnswer = rawAnswer.trim();
+      const jsonBlockMatch = cleanedAnswer.match(/```(?:json)?\s*\n?([\s\S]*?)\n?```/);
+      if (jsonBlockMatch) {
+        cleanedAnswer = jsonBlockMatch[1].trim();
+      }
+
+      const parsed = JSON.parse(cleanedAnswer);
       if (parsed.responses && Array.isArray(parsed.responses)) {
         return { answers: parsed.responses };
       }
     } catch (e) {
       // Fallback if not JSON - return as single response
+      console.warn('Appliqueer: Failed to parse JSON response', e);
     }
-    
+
     // Fallback: return single answer mapped to first question
-    return { 
-      answers: [{ question: questionList[0], answer: rawAnswer }] 
+    return {
+      answers: [{ question: questionList[0], answer: rawAnswer }]
     };
 
   } catch (error) {
@@ -198,8 +206,9 @@ function buildPrompt(questions, jobDescription, additionalContext, resume, addit
 Response length per question: ${lengthGuidance[responseLength] || lengthGuidance.concise}
 
 IMPORTANT:
-- Return your response as a JSON object with this exact structure:
+- Return ONLY a raw JSON object with this exact structure (do NOT wrap in markdown code blocks):
 {"responses": [{"question": "the question text", "answer": "your answer with \\n for new paragraphs"}, ...]}
+- Do NOT use markdown formatting like \`\`\`json or \`\`\` around the JSON response
 - Provide a separate response object for each question in the responses array
 - No fabricated information, only provide from the context provided
 - Only answer in paragraphs, no bullets, no points, no long dashes. Write as a person - the resume and context are yours, they are your experiences and achievements.
