@@ -138,6 +138,10 @@ async function handleAskAI(questions, jobDescription, additionalContext, respons
         cleanedAnswer = jsonBlockMatch[1].trim();
       }
 
+      // Fix common JSON issues from LLMs
+      // Remove trailing commas before closing brackets/braces
+      cleanedAnswer = cleanedAnswer.replace(/,(\s*[}\]])/g, '$1');
+
       const parsed = JSON.parse(cleanedAnswer);
       if (parsed.responses && Array.isArray(parsed.responses)) {
         return { answers: parsed.responses };
@@ -145,6 +149,7 @@ async function handleAskAI(questions, jobDescription, additionalContext, respons
     } catch (e) {
       // Fallback if not JSON - return as single response
       console.warn('Appliqueer: Failed to parse JSON response', e);
+      console.warn('Appliqueer: Raw response:', rawAnswer.substring(0, 200) + '...');
     }
 
     // Fallback: return single answer mapped to first question
@@ -205,14 +210,19 @@ function buildPrompt(questions, jobDescription, additionalContext, resume, addit
 
 Response length per question: ${lengthGuidance[responseLength] || lengthGuidance.concise}
 
-IMPORTANT:
-- Return ONLY a raw JSON object with this exact structure (do NOT wrap in markdown code blocks):
-{"responses": [{"question": "the question text", "answer": "your answer with \\n for new paragraphs"}, ...]}
-- Do NOT use markdown formatting like \`\`\`json or \`\`\` around the JSON response
+CRITICAL JSON FORMAT RULES:
+- Return ONLY valid JSON. Start with { and end with }
+- Do NOT wrap in markdown code blocks (\`\`\`json or \`\`\`)
+- Do NOT add trailing commas before closing brackets
+- Use this EXACT structure:
+{"responses": [{"question": "Q1 text", "answer": "Answer 1"}, {"question": "Q2 text", "answer": "Answer 2"}]}
+
+CONTENT RULES:
 - Provide a separate response object for each question in the responses array
 - No fabricated information, only provide from the context provided
-- Only answer in paragraphs, no bullets, no points, no long dashes. Write as a person - the resume and context are yours, they are your experiences and achievements.
-- If a job description is provided, tailor responses to match the job requirements using relevant experience from the resume.
+- Write answers in paragraphs only, no bullets, no points, no long dashes
+- Write as a person - the resume and context are yours, they are your experiences and achievements
+- If a job description is provided, tailor responses to match requirements using relevant experience from the resume
 
 ${context ? 'Here is the context about the user:\n\n' + context : 'Note: The user has not provided their resume yet. Encourage them to add it in settings for personalized responses.'}`;
 
@@ -239,7 +249,8 @@ async function callOpenAI(apiKey, prompt, settings) {
         { role: 'user', content: prompt.user }
       ],
       max_tokens: settings.maxTokens || 1024,
-      temperature: settings.temperature || 0.7
+      temperature: settings.temperature || 0.7,
+      response_format: { type: "json_object" }  // Force valid JSON output
     })
   });
 
